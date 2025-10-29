@@ -59,6 +59,27 @@ const menuItems: MenuItem[] = [
     icon: FileText,
     roles: ["manager", "supervisor", "director"],
   },
+  // KPI menu for production manager
+  {
+    label: "Lập báo cáo KPI",
+    href: "/statistics/kpi/create",
+    icon: FileText,
+    // Only production manager (Quản lý sản xuất) can create KPI reports
+    roles: ["manager"],
+  },
+  // Supervisor (Xưởng trưởng) can create KPI draft (phiếu KPI)
+  {
+    label: "Tạo Phiếu KPI",
+    href: "/statistics/kpi/drafts/create",
+    icon: FileText,
+    roles: ["supervisor"],
+  },
+  {
+    label: "Duyệt Phiếu KPI",
+    href: "/statistics/kpi/review",
+    icon: CheckCircle,
+    roles: ["manager", "director"],
+  },
   {
     label: "Phê Duyệt",
     href: "/approval/production-plan",
@@ -71,6 +92,17 @@ export default function Sidebar() {
   const pathname = usePathname()
   const { user, logout } = useAuth()
   const [isOpen, setIsOpen] = useState(true)
+
+  const roleLabels: Record<string, string> = {
+    admin: "Admin",
+    director: "Giám đốc",
+    manager: "Quản lý sản xuất",
+    supervisor: "Xưởng trưởng",
+    warehouse_raw: "Kho NVL",
+    warehouse_product: "Kho Thành Phẩm",
+    qc: "QC",
+    worker: "Công nhân",
+  }
 
   const filteredMenuItems = menuItems.filter((item) => item.roles.includes(user?.role || ""))
 
@@ -95,10 +127,11 @@ export default function Sidebar() {
           isOpen ? "translate-x-0" : "-translate-x-full"
         } md:translate-x-0 fixed md:relative w-64 h-screen bg-sidebar text-sidebar-foreground transition-transform duration-300 z-40 flex flex-col border-r border-sidebar-border`}
       >
-        {/* Logo */}
+        {/* Logo / User info */}
         <div className="p-6 border-b border-sidebar-border">
           <h1 className="text-xl font-bold text-sidebar-primary">Công ty An Phát</h1>
-          <p className="text-xs text-sidebar-foreground/60 mt-1">Quản Lý Sản Xuất</p>
+          <p className="text-sm font-medium mt-1">{user?.name ?? user?.email ?? "Khách"}</p>
+          <p className="text-xs text-sidebar-foreground/60 mt-1">{user ? roleLabels[user.role] ?? user.role : "Chưa đăng nhập"}</p>
         </div>
 
         {/* Menu Items */}
