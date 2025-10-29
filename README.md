@@ -41,6 +41,7 @@ Một hệ thống quản lý sản xuất toàn diện cho công ty sản xuấ
 - Hồ sơ cá nhân
 
 ## Cấu Trúc Dự Án
+```bash
 
 \`\`\`
 ├── app/
@@ -81,7 +82,7 @@ Một hệ thống quản lý sản xuất toàn diện cho công ty sản xuấ
 │   └── init-database.sql             # Database Initialization
 └── package.json                      # Dependencies
 \`\`\`
-
+```
 ## Vai Trò & Quyền Hạn
 
 | Vai Trò | Quyền Hạn |
