@@ -58,6 +58,13 @@ export default function RawMaterialsImportPage() {
     0
   );
 
+  // Gộp NVL theo NCC
+  const groupedByNCC = details.reduce<Record<string, PurchaseDetail[]>>((acc, item) => {
+    if (!acc[item.tenNCC]) acc[item.tenNCC] = [];
+    acc[item.tenNCC].push(item);
+    return acc;
+  }, {});
+
   return (
     <div className="flex h-screen bg-gray-50">
       {/* SIDEBAR */}
@@ -139,37 +146,18 @@ export default function RawMaterialsImportPage() {
                           Thông tin nguyên vật liệu ({details.length} items)
                         </div>
 
-                        {details.map((item, idx) => (
+                        {Object.entries(groupedByNCC).map(([tenNCC, items], idx) => (
                           <div key={idx} className="bg-white rounded-lg p-4 border border-blue-100">
-                            <div className="grid grid-cols-2 gap-4 text-sm">
-                              <div>
-                                <span className="font-medium text-gray-600">Mã NVL:</span>
-                                <span className="ml-2 text-gray-800">{item.maNVL}</span>
-                              </div>
-                              <div>
-                                <span className="font-medium text-gray-600">Tên NVL:</span>
-                                <span className="ml-2 text-gray-800">{item.tenNVL}</span>
-                              </div>
-                              <div>
-                                <span className="font-medium text-gray-600">Số lượng:</span>
-                                <span className="ml-2 text-gray-800">{item.soLuongYeuCau} m³</span>
-                              </div>
-                              <div>
-                                <span className="font-medium text-gray-600">Đơn giá:</span>
-                                <span className="ml-2 text-gray-800">{parseFloat(item.donGia).toLocaleString('vi-VN')} đ</span>
-                              </div>
-                              <div className="col-span-2">
-                                <span className="font-medium text-gray-600">Nhà cung cấp:</span>
-                                <span className="ml-2 text-gray-800">{item.tenNCC}</span>
-                              </div>
+                            <div className="font-medium text-gray-800 mb-2">Nhà cung cấp: {tenNCC}</div>
+                            <div className="text-sm space-y-1">
+                              {items.map((item, i) => (
+                                <div key={i}>
+                                  {item.maNVL} - {item.tenNVL} - {item.soLuongYeuCau} m³ - {parseFloat(item.donGia).toLocaleString('vi-VN')} đ
+                                </div>
+                              ))}
                             </div>
-                            <div className="mt-3 pt-3 border-t border-gray-200">
-                              <div className="flex justify-between items-center">
-                                <span className="text-sm font-medium text-gray-600">Thành tiền:</span>
-                                <span className="text-lg font-bold text-blue-600">
-                                  {(item.soLuongYeuCau * parseFloat(item.donGia)).toLocaleString('vi-VN')} đ
-                                </span>
-                              </div>
+                            <div className="mt-2 font-bold text-blue-600">
+                              Thành tiền: {items.reduce((sum, it) => sum + it.soLuongYeuCau * parseFloat(it.donGia), 0).toLocaleString('vi-VN')} đ
                             </div>
                           </div>
                         ))}
