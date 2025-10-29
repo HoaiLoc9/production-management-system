@@ -9,24 +9,20 @@ import { useAuth } from "@/lib/auth-context"
 import { Button } from "@/components/ui/button"
 import { BarChart3, Package, Users, Warehouse, CheckCircle, FileText, LogOut, Menu, X } from "lucide-react"
 
-<<<<<<< HEAD
-=======
 interface SubMenuItem {
   label: string
   href: string
   roles: string[]
 }
 
->>>>>>> origin/thaibao-feature
 interface MenuItem {
   label: string
   href: string
   icon: React.ComponentType<{ size: number }>
   roles: string[]
-<<<<<<< HEAD
-=======
+
   submenu?: SubMenuItem[]
->>>>>>> origin/thaibao-feature
+
 }
 
 const menuItems: MenuItem[] = [
@@ -50,11 +46,11 @@ const menuItems: MenuItem[] = [
   },
   {
     label: "Kho NVL",
-<<<<<<< HEAD
+
     href: "/warehouse/raw-materials/import",
     icon: Warehouse,
     roles: ["warehouse_raw", "manager", "director"],
-=======
+
     href: "/warehouse/raw-materials",
     icon: Warehouse,
     roles: ["warehouse_raw", "manager", "director"],
@@ -70,7 +66,7 @@ const menuItems: MenuItem[] = [
         roles: ["warehouse_raw", "manager", "director"],
       },
     ]
->>>>>>> origin/thaibao-feature
+
   },
   {
     label: "Kho Thành Phẩm",
@@ -90,7 +86,7 @@ const menuItems: MenuItem[] = [
     icon: FileText,
     roles: ["manager", "supervisor", "director"],
   },
-<<<<<<< HEAD
+
   // KPI menu for production manager
   {
     label: "Lập báo cáo KPI",
@@ -127,7 +123,7 @@ export default function Sidebar() {
   const { user, logout } = useAuth()
   const [isOpen, setIsOpen] = useState(true)
 
-<<<<<<< HEAD
+
   const roleLabels: Record<string, string> = {
     admin: "Admin",
     director: "Giám đốc",
@@ -139,8 +135,7 @@ export default function Sidebar() {
     worker: "Công nhân",
   }
 
-=======
->>>>>>> origin/thaibao-feature
+
   const filteredMenuItems = menuItems.filter((item) => item.roles.includes(user?.role || ""))
 
   const handleLogout = () => {
@@ -164,18 +159,18 @@ export default function Sidebar() {
           isOpen ? "translate-x-0" : "-translate-x-full"
         } md:translate-x-0 fixed md:relative w-64 h-screen bg-sidebar text-sidebar-foreground transition-transform duration-300 z-40 flex flex-col border-r border-sidebar-border`}
       >
-<<<<<<< HEAD
+
         {/* Logo / User info */}
         <div className="p-6 border-b border-sidebar-border">
           <h1 className="text-xl font-bold text-sidebar-primary">Công ty An Phát</h1>
           <p className="text-sm font-medium mt-1">{user?.name ?? user?.email ?? "Khách"}</p>
           <p className="text-xs text-sidebar-foreground/60 mt-1">{user ? roleLabels[user.role] ?? user.role : "Chưa đăng nhập"}</p>
-=======
+
         {/* Logo */}
         <div className="p-6 border-b border-sidebar-border">
           <h1 className="text-xl font-bold text-sidebar-primary">Công ty An Phát</h1>
           <p className="text-xs text-sidebar-foreground/60 mt-1">Quản Lý Sản Xuất</p>
->>>>>>> origin/thaibao-feature
+
         </div>
 
         {/* Menu Items */}
@@ -183,7 +178,6 @@ export default function Sidebar() {
           {filteredMenuItems.map((item) => {
             const Icon = item.icon
             const isActive = pathname.startsWith(item.href)
-<<<<<<< HEAD
             return (
               <Link key={item.href} href={item.href}>
                 <Button
@@ -198,7 +192,7 @@ export default function Sidebar() {
                   <span>{item.label}</span>
                 </Button>
               </Link>
-=======
+            )}
             const hasSubmenu = item.submenu && item.submenu.length > 0
             
             return (
