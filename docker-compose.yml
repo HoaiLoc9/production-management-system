@@ -1,0 +1,43 @@
+version: '3.9'
+
+services:
+  postgres-db:
+    image: postgres:16
+    container_name: postgres-db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: phancongdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: phancong-backend
+    environment:
+      DB_HOST: postgres-db
+      DB_USER: admin
+      DB_PASSWORD: 123456
+      DB_NAME: phancongdb
+      DB_PORT: 5432
+    ports:
+      - "5000:5000"
+    depends_on:
+      - postgres-db
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: phancong-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
