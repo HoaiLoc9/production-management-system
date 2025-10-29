@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // import { NextResponse } from "next/server"
 
 // const kpiReports: any[] = []
@@ -40,6 +41,14 @@ import { kpiDrafts, finalReports } from "@/app/api/kpi/data"
 export async function GET() {
   // Return saved final KPI reports
   return NextResponse.json(finalReports)
+=======
+import { NextResponse } from "next/server"
+
+const kpiReports: any[] = []
+
+export async function GET() {
+  return NextResponse.json(kpiReports)
+>>>>>>> origin/thaibao-feature
 }
 
 export async function POST(request: Request) {
@@ -50,6 +59,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 })
     }
 
+<<<<<<< HEAD
     // Create a final consolidated report from provided draft ids
     if (data.report_name && Array.isArray(data.kpi_report_ids)) {
       // collect approved drafts matching ids
@@ -84,6 +94,24 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "Bad request" }, { status: 400 })
   } catch (error) {
     console.error("Error creating final KPI report:", error)
+=======
+    const newReport = {
+      id: `KPI-${Date.now()}`,
+      report_date: data.report_date,
+      workshops: data.workshops,
+      average_kpi: data.average_kpi,
+      notes: data.notes,
+      created_by: data.created_by,
+      created_at: new Date().toISOString(),
+      status: "draft",
+    }
+
+    kpiReports.push(newReport)
+
+    return NextResponse.json(newReport, { status: 201 })
+  } catch (error) {
+    console.error("Error creating KPI report:", error)
+>>>>>>> origin/thaibao-feature
     return NextResponse.json({ message: "Internal server error" }, { status: 500 })
   }
 }

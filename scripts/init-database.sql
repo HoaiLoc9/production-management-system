@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/thaibao-feature
 -- Create users table
 CREATE TABLE IF NOT EXISTS users (
   id SERIAL PRIMARY KEY,
@@ -12,6 +15,10 @@ CREATE TABLE IF NOT EXISTS users (
 
 -- Create production plans table
 CREATE TABLE IF NOT EXISTS production_plans (
+<<<<<<< HEAD
+=======
+  id SERIAL PRIMARY KEY,
+>>>>>>> origin/thaibao-feature
   plan_code VARCHAR(50) UNIQUE NOT NULL,
   product_type VARCHAR(100) NOT NULL,
   quantity INT NOT NULL,
@@ -23,6 +30,7 @@ CREATE TABLE IF NOT EXISTS production_plans (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+<<<<<<< HEAD
 -- Bảng NHÀ CUNG CẤP (NCC)
 CREATE TABLE IF NOT EXISTS suppliers (
   maNCC CHAR(20) PRIMARY KEY DEFAULT CONCAT('NCC', SUBSTRING(MD5(RANDOM()::text), 1, 7)),
@@ -59,6 +67,32 @@ CREATE TABLE IF NOT EXISTS warehouse_receipts (
 );
 
 
+=======
+-- Create raw materials table
+CREATE TABLE IF NOT EXISTS raw_materials (
+  id SERIAL PRIMARY KEY,
+  material_code VARCHAR(50) UNIQUE NOT NULL,
+  material_name VARCHAR(255) NOT NULL,
+  unit VARCHAR(20) NOT NULL,
+  quantity INT NOT NULL,
+  reorder_level INT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create warehouse transactions table
+CREATE TABLE IF NOT EXISTS warehouse_transactions (
+  id SERIAL PRIMARY KEY,
+  transaction_type VARCHAR(20) NOT NULL,
+  material_id INT REFERENCES raw_materials(id),
+  quantity INT NOT NULL,
+  supplier VARCHAR(255),
+  notes TEXT,
+  created_by INT REFERENCES users(id),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+>>>>>>> origin/thaibao-feature
 -- Create work assignments table
 CREATE TABLE IF NOT EXISTS work_assignments (
   id SERIAL PRIMARY KEY,

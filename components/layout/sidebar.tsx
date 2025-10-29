@@ -9,11 +9,24 @@ import { useAuth } from "@/lib/auth-context"
 import { Button } from "@/components/ui/button"
 import { BarChart3, Package, Users, Warehouse, CheckCircle, FileText, LogOut, Menu, X } from "lucide-react"
 
+<<<<<<< HEAD
+=======
+interface SubMenuItem {
+  label: string
+  href: string
+  roles: string[]
+}
+
+>>>>>>> origin/thaibao-feature
 interface MenuItem {
   label: string
   href: string
   icon: React.ComponentType<{ size: number }>
   roles: string[]
+<<<<<<< HEAD
+=======
+  submenu?: SubMenuItem[]
+>>>>>>> origin/thaibao-feature
 }
 
 const menuItems: MenuItem[] = [
@@ -37,9 +50,27 @@ const menuItems: MenuItem[] = [
   },
   {
     label: "Kho NVL",
+<<<<<<< HEAD
     href: "/warehouse/raw-materials/import",
     icon: Warehouse,
     roles: ["warehouse_raw", "manager", "director"],
+=======
+    href: "/warehouse/raw-materials",
+    icon: Warehouse,
+    roles: ["warehouse_raw", "manager", "director"],
+    submenu: [
+      {
+        label: "Nhập kho",
+        href: "/warehouse/raw-materials/import",
+        roles: ["warehouse_raw", "manager", "director"],
+      },
+      {
+        label: "Lập phiếu đề xuất mua",
+        href: "/warehouse/raw-materials/request-purchase",
+        roles: ["warehouse_raw", "manager", "director"],
+      },
+    ]
+>>>>>>> origin/thaibao-feature
   },
   {
     label: "Kho Thành Phẩm",
@@ -59,6 +90,7 @@ const menuItems: MenuItem[] = [
     icon: FileText,
     roles: ["manager", "supervisor", "director"],
   },
+<<<<<<< HEAD
   // KPI menu for production manager
   {
     label: "Lập báo cáo KPI",
@@ -80,6 +112,8 @@ const menuItems: MenuItem[] = [
     icon: CheckCircle,
     roles: ["manager", "director"],
   },
+=======
+>>>>>>> origin/thaibao-feature
   {
     label: "Phê Duyệt",
     href: "/approval/production-plan",
@@ -93,6 +127,7 @@ export default function Sidebar() {
   const { user, logout } = useAuth()
   const [isOpen, setIsOpen] = useState(true)
 
+<<<<<<< HEAD
   const roleLabels: Record<string, string> = {
     admin: "Admin",
     director: "Giám đốc",
@@ -104,6 +139,8 @@ export default function Sidebar() {
     worker: "Công nhân",
   }
 
+=======
+>>>>>>> origin/thaibao-feature
   const filteredMenuItems = menuItems.filter((item) => item.roles.includes(user?.role || ""))
 
   const handleLogout = () => {
@@ -127,11 +164,18 @@ export default function Sidebar() {
           isOpen ? "translate-x-0" : "-translate-x-full"
         } md:translate-x-0 fixed md:relative w-64 h-screen bg-sidebar text-sidebar-foreground transition-transform duration-300 z-40 flex flex-col border-r border-sidebar-border`}
       >
+<<<<<<< HEAD
         {/* Logo / User info */}
         <div className="p-6 border-b border-sidebar-border">
           <h1 className="text-xl font-bold text-sidebar-primary">Công ty An Phát</h1>
           <p className="text-sm font-medium mt-1">{user?.name ?? user?.email ?? "Khách"}</p>
           <p className="text-xs text-sidebar-foreground/60 mt-1">{user ? roleLabels[user.role] ?? user.role : "Chưa đăng nhập"}</p>
+=======
+        {/* Logo */}
+        <div className="p-6 border-b border-sidebar-border">
+          <h1 className="text-xl font-bold text-sidebar-primary">Công ty An Phát</h1>
+          <p className="text-xs text-sidebar-foreground/60 mt-1">Quản Lý Sản Xuất</p>
+>>>>>>> origin/thaibao-feature
         </div>
 
         {/* Menu Items */}
@@ -139,6 +183,7 @@ export default function Sidebar() {
           {filteredMenuItems.map((item) => {
             const Icon = item.icon
             const isActive = pathname.startsWith(item.href)
+<<<<<<< HEAD
             return (
               <Link key={item.href} href={item.href}>
                 <Button
@@ -153,6 +198,48 @@ export default function Sidebar() {
                   <span>{item.label}</span>
                 </Button>
               </Link>
+=======
+            const hasSubmenu = item.submenu && item.submenu.length > 0
+            
+            return (
+              <div key={item.href} className="space-y-1">
+                <Link href={item.href}>
+                  <Button
+                    variant={isActive ? "default" : "ghost"}
+                    className={`w-full justify-start gap-3 ${
+                      isActive
+                        ? "bg-sidebar-primary text-sidebar-primary-foreground"
+                        : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                    }`}
+                  >
+                    <Icon size={18} />
+                    <span>{item.label}</span>
+                  </Button>
+                </Link>
+                
+                {hasSubmenu && (
+                  <div className="ml-6 space-y-1">
+                    {item.submenu?.map((subItem) => {
+                      const isSubActive = pathname === subItem.href
+                      return (
+                        <Link key={subItem.href} href={subItem.href}>
+                          <Button
+                            variant={isSubActive ? "default" : "ghost"}
+                            className={`w-full justify-start text-sm ${
+                              isSubActive
+                                ? "bg-sidebar-primary text-sidebar-primary-foreground"
+                                : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                            }`}
+                          >
+                            {subItem.label}
+                          </Button>
+                        </Link>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
+>>>>>>> origin/thaibao-feature
             )
           })}
         </nav>
