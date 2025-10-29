@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 // import { NextResponse } from "next/server"
 
 // const kpiReports: any[] = []
@@ -42,13 +43,18 @@ export async function GET() {
   // Return saved final KPI reports
   return NextResponse.json(finalReports)
 =======
+=======
+>>>>>>> origin/PhanHongLieu
 import { NextResponse } from "next/server"
 
 const kpiReports: any[] = []
 
 export async function GET() {
   return NextResponse.json(kpiReports)
+<<<<<<< HEAD
 >>>>>>> origin/thaibao-feature
+=======
+>>>>>>> origin/PhanHongLieu
 }
 
 export async function POST(request: Request) {
@@ -59,6 +65,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 })
     }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
     // Create a final consolidated report from provided draft ids
     if (data.report_name && Array.isArray(data.kpi_report_ids)) {
@@ -95,6 +102,8 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("Error creating final KPI report:", error)
 =======
+=======
+>>>>>>> origin/PhanHongLieu
     const newReport = {
       id: `KPI-${Date.now()}`,
       report_date: data.report_date,
@@ -111,7 +120,10 @@ export async function POST(request: Request) {
     return NextResponse.json(newReport, { status: 201 })
   } catch (error) {
     console.error("Error creating KPI report:", error)
+<<<<<<< HEAD
 >>>>>>> origin/thaibao-feature
+=======
+>>>>>>> origin/PhanHongLieu
     return NextResponse.json({ message: "Internal server error" }, { status: 500 })
   }
 }

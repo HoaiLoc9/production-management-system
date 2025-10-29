@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 "use client";
 
 import { useState, useEffect } from "react";
@@ -129,6 +130,8 @@ export default function RawMaterialsImportPage() {
                       </SelectItem>
                     ))}
 =======
+=======
+>>>>>>> origin/PhanHongLieu
 "use client"
 
 import type React from "react"
@@ -183,11 +186,15 @@ export default function RawMaterialsImportPage() {
                     <SelectItem value="fabric">Vải</SelectItem>
                     <SelectItem value="metal">Kim loại</SelectItem>
                     <SelectItem value="foam">Xốp</SelectItem>
+<<<<<<< HEAD
 >>>>>>> origin/thaibao-feature
+=======
+>>>>>>> origin/PhanHongLieu
                   </SelectContent>
                 </Select>
               </div>
 
+<<<<<<< HEAD
 <<<<<<< HEAD
               {/* HIỂN THỊ CHI TIẾT */}
               {maphieumuanvl && (
@@ -247,6 +254,8 @@ export default function RawMaterialsImportPage() {
     </div>
   );
 =======
+=======
+>>>>>>> origin/PhanHongLieu
               <div>
                 <label className="text-sm font-medium">Số Lượng *</label>
                 <Input
@@ -307,5 +316,8 @@ export default function RawMaterialsImportPage() {
       </Card>
     </div>
   )
+<<<<<<< HEAD
 >>>>>>> origin/thaibao-feature
+=======
+>>>>>>> origin/PhanHongLieu
 }

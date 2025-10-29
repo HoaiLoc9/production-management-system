@@ -2,6 +2,9 @@
 
 import type React from "react"
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin/PhanHongLieu
 
 import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -135,6 +138,7 @@ export default function RequestPurchasePage() {
     </div>
   )
 }
+<<<<<<< HEAD
 =======
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
@@ -766,3 +770,5 @@ export default function RequestPurchasePage() {
   )
 }
 >>>>>>> origin/thaibao-feature
+=======
+>>>>>>> origin/PhanHongLieu

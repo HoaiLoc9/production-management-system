@@ -1,6 +1,7 @@
 "use client"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 import React, { useEffect, useState } from "react"
 import { useAuth } from "@/lib/auth-context"
 import { useRouter } from "next/navigation"
@@ -65,6 +66,8 @@ export default function KPIReviewPage() {
         <h1 className="text-3xl font-bold text-foreground">Duyệt Phiếu KPI</h1>
         <p className="text-muted-foreground mt-2">Danh sách phiếu KPI do xưởng trưởng gửi</p>
 =======
+=======
+>>>>>>> origin/PhanHongLieu
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 const kpiReviews = [
@@ -121,11 +124,15 @@ export default function KPIReviewPage() {
             <div className="text-2xl font-bold text-red-600">4</div>
           </CardContent>
         </Card>
+<<<<<<< HEAD
 >>>>>>> origin/thaibao-feature
+=======
+>>>>>>> origin/PhanHongLieu
       </div>
 
       <Card>
         <CardHeader>
+<<<<<<< HEAD
 <<<<<<< HEAD
           <CardTitle>Phiếu KPI</CardTitle>
         </CardHeader>
@@ -193,6 +200,8 @@ export default function KPIReviewPage() {
                     </Button>
                   )}
 =======
+=======
+>>>>>>> origin/PhanHongLieu
           <CardTitle>Chi Tiết Đánh Giá KPI</CardTitle>
         </CardHeader>
         <CardContent>
@@ -222,7 +231,10 @@ export default function KPIReviewPage() {
                     className="bg-primary h-2 rounded-full"
                     style={{ width: `${Math.min(review.achievement, 100)}%` }}
                   />
+<<<<<<< HEAD
 >>>>>>> origin/thaibao-feature
+=======
+>>>>>>> origin/PhanHongLieu
                 </div>
               </div>
             ))}

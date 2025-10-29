@@ -1,7 +1,10 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> origin/thaibao-feature
+=======
+>>>>>>> origin/PhanHongLieu
 -- Create users table
 CREATE TABLE IF NOT EXISTS users (
   id SERIAL PRIMARY KEY,
@@ -16,9 +19,13 @@ CREATE TABLE IF NOT EXISTS users (
 -- Create production plans table
 CREATE TABLE IF NOT EXISTS production_plans (
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
   id SERIAL PRIMARY KEY,
 >>>>>>> origin/thaibao-feature
+=======
+  id SERIAL PRIMARY KEY,
+>>>>>>> origin/PhanHongLieu
   plan_code VARCHAR(50) UNIQUE NOT NULL,
   product_type VARCHAR(100) NOT NULL,
   quantity INT NOT NULL,
@@ -30,6 +37,7 @@ CREATE TABLE IF NOT EXISTS production_plans (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 -- Bảng NHÀ CUNG CẤP (NCC)
 CREATE TABLE IF NOT EXISTS suppliers (
@@ -68,6 +76,8 @@ CREATE TABLE IF NOT EXISTS warehouse_receipts (
 
 
 =======
+=======
+>>>>>>> origin/PhanHongLieu
 -- Create raw materials table
 CREATE TABLE IF NOT EXISTS raw_materials (
   id SERIAL PRIMARY KEY,
@@ -92,7 +102,10 @@ CREATE TABLE IF NOT EXISTS warehouse_transactions (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+<<<<<<< HEAD
 >>>>>>> origin/thaibao-feature
+=======
+>>>>>>> origin/PhanHongLieu
 -- Create work assignments table
 CREATE TABLE IF NOT EXISTS work_assignments (
   id SERIAL PRIMARY KEY,
