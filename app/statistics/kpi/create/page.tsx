@@ -4,13 +4,8 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/lib/auth-context"
-<<<<<<< HEAD
-<<<<<<< HEAD
+import { FileText } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
-=======
->>>>>>> origin/thaibao-feature
-=======
->>>>>>> origin/PhanHongLieu
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -40,8 +35,6 @@ export default function CreateKPIReportPage() {
     ],
     notes: "",
   })
-<<<<<<< HEAD
-<<<<<<< HEAD
   const [drafts, setDrafts] = useState<any[]>([])
   const [selectedDraftIds, setSelectedDraftIds] = useState<string[]>([])
   const [reportName, setReportName] = useState("")
@@ -69,19 +62,6 @@ export default function CreateKPIReportPage() {
         // ignore
       }
     })()
-=======
-=======
->>>>>>> origin/PhanHongLieu
-
-  useEffect(() => {
-    if (user && user.role !== "supervisor") {
-      setError("Chỉ xưởng trưởng mới có quyền lập báo cáo KPI")
-      setTimeout(() => router.push("/dashboard/statistics"), 2000)
-    }
-<<<<<<< HEAD
->>>>>>> origin/thaibao-feature
-=======
->>>>>>> origin/PhanHongLieu
   }, [user, router])
 
   const handleWorkshopChange = (index: number, field: string, value: string | number) => {
@@ -98,8 +78,6 @@ export default function CreateKPIReportPage() {
     return rates.length > 0 ? (rates.reduce((a, b) => a + b, 0) / rates.length).toFixed(1) : "0"
   }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
   // helper to extract KPI numbers from a single draft (used to display per-draft summary)
   function getMetricsFromDraft(d: any) {
     let productivity: number | null = null
@@ -327,18 +305,12 @@ export default function CreateKPIReportPage() {
 
   const aggregatedSummary = calcSummaryFromAggregated()
 
-=======
->>>>>>> origin/thaibao-feature
-=======
->>>>>>> origin/PhanHongLieu
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     setError("")
 
     try {
-<<<<<<< HEAD
-<<<<<<< HEAD
       // If manager selected approved drafts, create a final report from them
       if (selectedDraftIds.length > 0) {
         if (!reportName.trim() || !reportPeriodStart || !reportPeriodEnd) {
@@ -373,29 +345,17 @@ export default function CreateKPIReportPage() {
 
         toast({ title: "Lưu thành công", description: "Báo cáo KPI cuối đã được tạo." })
         await new Promise((res) => setTimeout(res, 800))
-        router.push("/statistics/kpi/review")
+        router.push("/statistics/kpi/report")
         return
       }
 
       // Fallback: create a draft-style report using current formData (legacy)
-=======
->>>>>>> origin/thaibao-feature
-=======
->>>>>>> origin/PhanHongLieu
       const response = await fetch("/api/kpi/reports", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
-<<<<<<< HEAD
-<<<<<<< HEAD
           created_by: "Quản lý sản xuất",
-=======
-          created_by: user?.id,
->>>>>>> origin/thaibao-feature
-=======
-          created_by: user?.id,
->>>>>>> origin/PhanHongLieu
           average_kpi: calculateAverageKPI(),
         }),
       })
@@ -404,17 +364,11 @@ export default function CreateKPIReportPage() {
         throw new Error("Lỗi khi lưu báo cáo KPI")
       }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
       // show success toast then redirect
       toast({ title: "Lưu thành công", description: "Báo cáo KPI đã được lưu." })
       // small delay so user sees toast
       await new Promise((res) => setTimeout(res, 800))
-=======
->>>>>>> origin/thaibao-feature
-=======
->>>>>>> origin/PhanHongLieu
-      router.push("/statistics/kpi/review")
+      router.push("/statistics/kpi/report")
     } catch (err) {
       setError(err instanceof Error ? err.message : "Có lỗi xảy ra")
     } finally {
@@ -422,15 +376,7 @@ export default function CreateKPIReportPage() {
     }
   }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
   if (error && user?.role !== "manager") {
-=======
-  if (error && user?.role !== "supervisor") {
->>>>>>> origin/thaibao-feature
-=======
-  if (error && user?.role !== "supervisor") {
->>>>>>> origin/PhanHongLieu
     return (
       <div className="p-6">
         <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-lg">
@@ -441,19 +387,25 @@ export default function CreateKPIReportPage() {
     )
   }
 
-  return (
-    <div className="p-6 space-y-6">
+return (
+  <div className="p-6 space-y-6">
+    <div className="flex items-center justify-between">
       <div>
         <h1 className="text-3xl font-bold text-foreground">Lập báo cáo KPI</h1>
         <p className="text-muted-foreground mt-2">Tổng hợp hiệu suất sản xuất từ các xưởng</p>
       </div>
+      <Button variant="outline" onClick={() => router.push("/statistics/kpi/report")}>
+        <FileText className="mr-2 h-4 w-4" /> Xem lại báo cáo KPI đã lập
+      </Button>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Lập báo cáo KPI</CardTitle>
-          <CardDescription>Ghi nhận giao dịch nhập kho nguyên vật liệu</CardDescription>
-        </CardHeader>
-        <CardContent>
+    </div>
+
+    <Card>
+      <CardHeader>
+        <CardTitle>Lập báo cáo KPI</CardTitle>
+        <CardDescription>Ghi nhận giao dịch nhập kho nguyên vật liệu</CardDescription>
+      </CardHeader>
+      <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Report Date */}
             <div>
@@ -466,8 +418,6 @@ export default function CreateKPIReportPage() {
               />
             </div>
 
-<<<<<<< HEAD
-<<<<<<< HEAD
             {/* Approved Drafts Selection (from supervisors) */}
             <div>
               <h3 className="font-semibold text-foreground">Chọn phiếu KPI đã duyệt</h3>
@@ -550,12 +500,6 @@ export default function CreateKPIReportPage() {
             </div> */}
 
             {/* KPI Summary Section (computed from selected drafts when present) */}
-=======
-            {/* KPI Summary Section */}
->>>>>>> origin/thaibao-feature
-=======
-            {/* KPI Summary Section */}
->>>>>>> origin/PhanHongLieu
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-4">
               <h3 className="font-semibold text-foreground">Thông tin KPI từ các xưởng</h3>
 
@@ -563,78 +507,32 @@ export default function CreateKPIReportPage() {
                 <div className="bg-white p-3 rounded border border-border">
                   <p className="text-xs text-muted-foreground">Năng suất TB (ghế/ca)</p>
                   <p className="text-xl font-bold mt-1">
-<<<<<<< HEAD
-<<<<<<< HEAD
                     {aggregatedSummary ? aggregatedSummary.productivity : (formData.workshops.reduce((sum, w) => sum + w.productivity, 0) / formData.workshops.length).toFixed(1)}
-=======
-                    {(formData.workshops.reduce((sum, w) => sum + w.productivity, 0) / 4).toFixed(1)}
->>>>>>> origin/thaibao-feature
-=======
-                    {(formData.workshops.reduce((sum, w) => sum + w.productivity, 0) / 4).toFixed(1)}
->>>>>>> origin/PhanHongLieu
                   </p>
                 </div>
                 <div className="bg-white p-3 rounded border border-border">
                   <p className="text-xs text-muted-foreground">Đơn giá</p>
-<<<<<<< HEAD
-<<<<<<< HEAD
                   <p className="text-sm text-primary font-medium mt-1">Tự động tính</p>
-=======
-                  <p className="text-sm text-primary font-medium mt-1">Từ động tính</p>
->>>>>>> origin/thaibao-feature
-=======
-                  <p className="text-sm text-primary font-medium mt-1">Từ động tính</p>
->>>>>>> origin/PhanHongLieu
                 </div>
                 <div className="bg-white p-3 rounded border border-border">
                   <p className="text-xs text-muted-foreground">Chu kỳ TB (cái/lô)</p>
                   <p className="text-xl font-bold mt-1">
-<<<<<<< HEAD
-<<<<<<< HEAD
                     {aggregatedSummary ? aggregatedSummary.cycle_time : (formData.workshops.reduce((sum, w) => sum + w.cycle_time, 0) / formData.workshops.length).toFixed(1)}
-=======
-                    {(formData.workshops.reduce((sum, w) => sum + w.cycle_time, 0) / 4).toFixed(1)}
->>>>>>> origin/thaibao-feature
-=======
-                    {(formData.workshops.reduce((sum, w) => sum + w.cycle_time, 0) / 4).toFixed(1)}
->>>>>>> origin/PhanHongLieu
                   </p>
                 </div>
                 <div className="bg-white p-3 rounded border border-border">
                   <p className="text-xs text-muted-foreground">Tỷ lệ hoàn thành TB</p>
-<<<<<<< HEAD
-<<<<<<< HEAD
                   <p className="text-sm text-primary font-medium mt-1">{aggregatedSummary ? `${aggregatedSummary.completion_rate}%` : `${calculateAverageKPI()}%`}</p>
-=======
-                  <p className="text-sm text-primary font-medium mt-1">{calculateAverageKPI()}%</p>
->>>>>>> origin/thaibao-feature
-=======
-                  <p className="text-sm text-primary font-medium mt-1">{calculateAverageKPI()}%</p>
->>>>>>> origin/PhanHongLieu
                 </div>
               </div>
 
               <div className="bg-white p-3 rounded border border-border">
                 <p className="text-xs text-muted-foreground">Tổng KPI trung bình</p>
-<<<<<<< HEAD
-<<<<<<< HEAD
                 <p className="text-2xl font-bold text-primary mt-2">{aggregatedSummary ? `${aggregatedSummary.completion_rate}%` : `${calculateAverageKPI()}%`}</p>
               </div>
             </div>
 
             {/* Workshop Details - read-only layout matching design */}
-=======
-=======
->>>>>>> origin/PhanHongLieu
-                <p className="text-2xl font-bold text-primary mt-2">{calculateAverageKPI()}%</p>
-              </div>
-            </div>
-
-            {/* Workshop Details */}
-<<<<<<< HEAD
->>>>>>> origin/thaibao-feature
-=======
->>>>>>> origin/PhanHongLieu
             <div>
               <h3 className="font-semibold text-foreground mb-3">Xem chi tiết KPI từng xưởng</h3>
               <div className="overflow-x-auto">
@@ -648,8 +546,6 @@ export default function CreateKPIReportPage() {
                     </tr>
                   </thead>
                   <tbody>
-<<<<<<< HEAD
-<<<<<<< HEAD
                     {(aggregatedWorkshops || formData.workshops).map((workshop: any, index: number) => {
                       const w = aggregatedWorkshops ? workshop : formData.workshops[index]
                       const prod = Number.isFinite(Number(w.productivity)) ? Number(w.productivity) : 0
@@ -672,53 +568,6 @@ export default function CreateKPIReportPage() {
                         </tr>
                       )
                     })}
-=======
-=======
->>>>>>> origin/PhanHongLieu
-                    {formData.workshops.map((workshop, index) => (
-                      <tr key={workshop.workshop_id} className="border-b border-border hover:bg-muted/50">
-                        <td className="py-3 px-3 font-medium">{workshop.workshop_name}</td>
-                        <td className="py-3 px-3">
-                          <Input
-                            type="number"
-                            step="0.1"
-                            value={workshop.productivity}
-                            onChange={(e) => handleWorkshopChange(index, "productivity", e.target.value)}
-                            className="w-20"
-                            placeholder="0"
-                          />
-                        </td>
-                        <td className="py-3 px-3">
-                          <Input
-                            type="number"
-                            step="0.1"
-                            value={workshop.cycle_time}
-                            onChange={(e) => handleWorkshopChange(index, "cycle_time", e.target.value)}
-                            className="w-20"
-                            placeholder="0"
-                          />
-                        </td>
-                        <td className="py-3 px-3">
-                          <div className="flex items-center gap-2">
-                            <Input
-                              type="number"
-                              step="0.1"
-                              min="0"
-                              max="100"
-                              value={workshop.completion_rate}
-                              onChange={(e) => handleWorkshopChange(index, "completion_rate", e.target.value)}
-                              className="w-20"
-                              placeholder="0"
-                            />
-                            <span className="text-xs text-muted-foreground">%</span>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-<<<<<<< HEAD
->>>>>>> origin/thaibao-feature
-=======
->>>>>>> origin/PhanHongLieu
                   </tbody>
                 </table>
               </div>

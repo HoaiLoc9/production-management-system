@@ -1,145 +1,6 @@
 "use client"
 
 import type React from "react"
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> origin/PhanHongLieu
-
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-
-export default function RequestPurchasePage() {
-  const [formData, setFormData] = useState({
-    material_type: "",
-    quantity: "",
-    unit: "",
-    supplier: "",
-    urgency: "",
-    notes: "",
-  })
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log("Form submitted:", formData)
-  }
-
-  return (
-    <div className="p-6 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-foreground">Yêu Cầu Mua Nguyên Vật Liệu</h1>
-        <p className="text-muted-foreground mt-2">Tạo yêu cầu mua nguyên vật liệu mới</p>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Phiếu Yêu Cầu Mua</CardTitle>
-          <CardDescription>Điền thông tin chi tiết về yêu cầu mua nguyên vật liệu</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm font-medium">Loại Nguyên Vật Liệu *</label>
-                <Select
-                  value={formData.material_type}
-                  onValueChange={(value) => setFormData({ ...formData, material_type: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Chọn loại nguyên vật liệu" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="wood">Gỗ</SelectItem>
-                    <SelectItem value="fabric">Vải</SelectItem>
-                    <SelectItem value="metal">Kim loại</SelectItem>
-                    <SelectItem value="foam">Xốp</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <label className="text-sm font-medium">Số Lượng *</label>
-                <Input
-                  type="number"
-                  value={formData.quantity}
-                  onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
-                  placeholder="Nhập số lượng"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="text-sm font-medium">Đơn Vị *</label>
-                <Select value={formData.unit} onValueChange={(value) => setFormData({ ...formData, unit: value })}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Chọn đơn vị" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="kg">Kg</SelectItem>
-                    <SelectItem value="m">Mét</SelectItem>
-                    <SelectItem value="piece">Cái</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <label className="text-sm font-medium">Nhà Cung Cấp *</label>
-                <Input
-                  value={formData.supplier}
-                  onChange={(e) => setFormData({ ...formData, supplier: e.target.value })}
-                  placeholder="Nhập tên nhà cung cấp"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="text-sm font-medium">Mức Độ Ưu Tiên *</label>
-                <Select
-                  value={formData.urgency}
-                  onValueChange={(value) => setFormData({ ...formData, urgency: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Chọn mức độ ưu tiên" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="low">Thấp</SelectItem>
-                    <SelectItem value="medium">Trung Bình</SelectItem>
-                    <SelectItem value="high">Cao</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div>
-              <label className="text-sm font-medium">Ghi Chú</label>
-              <textarea
-                value={formData.notes}
-                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                placeholder="Ghi chú về yêu cầu..."
-                className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                rows={4}
-              />
-            </div>
-
-            <div className="flex gap-3 justify-end">
-              <Button type="button" variant="outline">
-                Hủy
-              </Button>
-              <Button type="submit" className="bg-primary text-primary-foreground">
-                Gửi Yêu Cầu
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
-    </div>
-  )
-}
-<<<<<<< HEAD
-=======
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -169,6 +30,7 @@ export default function RequestPurchasePage() {
   const [open, setOpen] = useState(false)
   const [success, setSuccess] = useState(false)
   const [requestId, setRequestId] = useState("PR-2025-001")
+  const [activeTab, setActiveTab] = useState<'form' | 'list'>('form')
   const [requests, setRequests] = useState<PurchaseRequest[]>(() => {
     // Load saved requests from localStorage
     const saved = localStorage.getItem('purchaseRequests')
@@ -180,6 +42,10 @@ export default function RequestPurchasePage() {
   const [selectedMaterial, setSelectedMaterial] = useState("")
   const [quantity, setQuantity] = useState("")
   const [unit, setUnit] = useState("lít")
+  const [date, setDate] = useState("2025-10-29") // Current date: October 29, 2025
+  const [confirmer, setConfirmer] = useState("Nguyễn Trần Thái Bảo")
+  const router = useRouter()
+
   // Mock current stock lookup (in real app this comes from warehouse API)
   const currentStockLookup: Record<string, { stock: number; unit: string }> = {
     "Keo dán": { stock: 2, unit: "lít" },
@@ -224,43 +90,39 @@ export default function RequestPurchasePage() {
     }
     setSuggestedShortages(shortages)
   }, [productionPlans, requests])
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0])
-  const [confirmer, setConfirmer] = useState("Nguyễn Trần Thái Bảo")
-  const router = useRouter()
 
   // Save requests to localStorage whenever they change
   useEffect(() => {
     localStorage.setItem('purchaseRequests', JSON.stringify(requests))
   }, [requests])
 
-  // Reset form data when component unmounts or route changes
-  useEffect(() => {
-    return () => {
-      // Only clear draft form state
-      setMaterials([])
-      setSelectedMaterial("")
-      setQuantity("")
-      setUnit("lít")
-      setSuccess(false)
-      setOpen(false)
-      setDetailOpen(false)
-      setSelectedRequest(null)
-    }
-  }, [])
-
   const handleAddMaterial = () => {
     if (!selectedMaterial || !quantity) return
+    
+    // Validate quantity is positive
+    const quantityNum = Number(quantity)
+    if (isNaN(quantityNum) || quantityNum <= 0) {
+      alert("Số lượng phải lớn hơn 0")
+      return
+    }
+
+    // Check for duplicate material
+    if (materials.some(m => m.name === selectedMaterial)) {
+      alert("Nguyên vật liệu này đã được thêm vào danh sách")
+      return
+    }
 
     const newMaterial: Material = {
       name: selectedMaterial,
-      currentStock: 2, // This would come from your backend
-      requestQuantity: Number(quantity),
-      unit: unit // use selected unit
+      currentStock: currentStockLookup[selectedMaterial]?.stock || 0,
+      requestQuantity: quantityNum,
+      unit: currentStockLookup[selectedMaterial]?.unit || unit
     }
 
     setMaterials([...materials, newMaterial])
     setSelectedMaterial("")
     setQuantity("")
+    setUnit(currentStockLookup[selectedMaterial]?.unit || "lít")
   }
 
   const handleRemoveMaterial = (index: number) => {
@@ -272,7 +134,6 @@ export default function RequestPurchasePage() {
   }
 
   const handleCancelDraft = () => {
-    // clear current draft form
     setMaterials([])
     setSelectedMaterial("")
     setQuantity("")
@@ -281,16 +142,11 @@ export default function RequestPurchasePage() {
   }
 
   const openRequestDetail = (req: PurchaseRequest) => {
-    // ensure selected request set before opening dialog
     setSelectedRequest(req)
     setDetailOpen(true)
-    // debug log to help diagnose
-    // eslint-disable-next-line no-console
-    console.log('Open request detail', req.id)
   }
 
   const handleConfirm = () => {
-    // Handle form submission: create and store the request
     const year = new Date().getFullYear()
     const yearRequests = requests.filter(r => r.id.startsWith(`PR-${year}`))
     const nextNumber = yearRequests.length + 1
@@ -305,9 +161,9 @@ export default function RequestPurchasePage() {
 
     setRequests((prev) => [newRequest, ...prev])
     setRequestId(newId)
-    // keep current materials for success view until user creates a new one
     setOpen(false)
     setSuccess(true)
+    setActiveTab('list')
   }
 
   const handleCreateNew = () => {
@@ -317,213 +173,11 @@ export default function RequestPurchasePage() {
     setQuantity("")
     setUnit("lít")
     setDate(new Date().toISOString().split('T')[0])
+    setActiveTab('form')
   }
 
-  // Persist requests to localStorage so they survive page reloads
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem("purchase_requests")
-      if (raw) {
-        const parsed = JSON.parse(raw) as PurchaseRequest[]
-        setRequests(parsed)
-      }
-    } catch (e) {
-      // ignore parse errors
-    }
-  }, [])
-
-  useEffect(() => {
-    try {
-      localStorage.setItem("purchase_requests", JSON.stringify(requests))
-    } catch (e) {
-      // ignore
-    }
-  }, [requests])
-
-  if (success) {
-    return (
-      <div className="container mx-auto py-6 space-y-6">
-        <div className="px-4 py-2 text-primary border-b-2 border-primary inline-block rounded-md">Lập phiếu mua NVL</div>
-
-        <div className="space-y-6">
-          <div className="rounded-lg border bg-white px-6 py-6 space-y-6">
-            <div className="flex items-start gap-4">
-              <div className="flex-none text-green-600">
-                <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none">
-                  <path d="M22 4L12 14.01L9 11.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-lg font-medium">Lập Phiếu Thành Công</h3>
-                <p className="text-sm text-slate-600 mt-1">Phiếu đề xuất mua NVL đã được lưu vào hệ thống</p>
-
-                <div className="mt-4 bg-green-50 border border-green-100 rounded-md p-3">
-                  <p className="text-sm text-green-800">Phiếu đề xuất đã được lưu với trạng thái "Chờ phê duyệt". Ban giám đốc đã nhận được thông báo.</p>
-                </div>
-
-                <div className="mt-6 bg-slate-50 rounded-md p-4">
-                  <h4 className="font-medium mb-2">Thông tin phiếu đề xuất</h4>
-                  <dl className="grid grid-cols-2 gap-3 text-sm text-slate-700">
-                    <div>
-                      <dt className="text-muted-foreground">Mã phiếu</dt>
-                      <dd className="mt-1">{requestId}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-muted-foreground">Ngày lập</dt>
-                      <dd className="mt-1">{date}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-muted-foreground">Người xác nhận</dt>
-                      <dd className="mt-1">{confirmer}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-muted-foreground">Trạng thái</dt>
-                      <dd className="mt-1"><span className="inline-block bg-yellow-50 text-yellow-800 px-2 py-0.5 rounded-full text-xs">Chờ phê duyệt</span></dd>
-                    </div>
-                  </dl>
-                </div>
-
-                <div className="mt-6">
-                  <h4 className="font-medium mb-3">Danh sách NVL</h4>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Tên NVL</TableHead>
-                        <TableHead>Số lượng đề xuất</TableHead>
-                        <TableHead>Đơn vị</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {materials.map((material, index) => (
-                        <TableRow key={index}>
-                          <TableCell>{material.name}</TableCell>
-                          <TableCell>{material.requestQuantity}</TableCell>
-                          <TableCell>{material.unit}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                  </div>
-
-                  {/* Detail dialog for viewing a saved request (also available here) */}
-                  <Dialog open={detailOpen} onOpenChange={setDetailOpen}>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Chi tiết phiếu</DialogTitle>
-                        <DialogDescription>Thông tin chi tiết phiếu đề xuất mua nguyên vật liệu</DialogDescription>
-                      </DialogHeader>
-
-                      {selectedRequest ? (
-                        <div className="py-2 space-y-4">
-                          <div className="grid grid-cols-2 gap-4 text-sm">
-                            <div>
-                              <dt className="text-muted-foreground">Mã phiếu</dt>
-                              <dd className="font-medium">{selectedRequest.id}</dd>
-                            </div>
-                            <div>
-                              <dt className="text-muted-foreground">Ngày lập</dt>
-                              <dd className="font-medium">{selectedRequest.date}</dd>
-                            </div>
-                            <div>
-                              <dt className="text-muted-foreground">Người xác nhận</dt>
-                              <dd className="font-medium">{selectedRequest.confirmer}</dd>
-                            </div>
-                            <div>
-                              <dt className="text-muted-foreground">Trạng thái</dt>
-                              <dd><span className="inline-block bg-yellow-50 text-yellow-800 px-2 py-0.5 rounded-full text-xs">{selectedRequest.status}</span></dd>
-                            </div>
-                          </div>
-
-                          <div>
-                            <h4 className="font-medium">Danh sách NVL</h4>
-                            <Table>
-                              <TableHeader>
-                                <TableRow>
-                                  <TableHead>Tên NVL</TableHead>
-                                  <TableHead>Số lượng</TableHead>
-                                  <TableHead>Đơn vị</TableHead>
-                                </TableRow>
-                              </TableHeader>
-                              <TableBody>
-                                {selectedRequest.materials.map((m, i) => (
-                                  <TableRow key={i}>
-                                    <TableCell>{m.name}</TableCell>
-                                    <TableCell>{m.requestQuantity}</TableCell>
-                                    <TableCell>{m.unit}</TableCell>
-                                  </TableRow>
-                                ))}
-                              </TableBody>
-                            </Table>
-                          </div>
-                        </div>
-                      ) : (
-                        <div>Không có dữ liệu</div>
-                      )}
-
-                      <DialogFooter>
-                        <Button variant="outline" onClick={() => setDetailOpen(false)}>Đóng</Button>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
-
-                <div className="mt-6 flex gap-3">
-                  <Button onClick={handleCreateNew} className="bg-slate-900 text-white hover:bg-slate-800">
-                    Lập phiếu mới
-                  </Button>
-                  <Button variant="outline" onClick={() => router.back()}>
-                    Về lại trang NVL
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Danh sách phiếu đề xuất (summary) */}
-          <div className="rounded-lg border bg-white p-6">
-            <h4 className="font-medium mb-3">Danh sách Phiếu Đề Xuất Mua NVL</h4>
-            <p className="text-sm text-slate-600 mb-4">Các phiếu đề xuất đã được tạo</p>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Mã phiếu</TableHead>
-                  <TableHead>Ngày lập</TableHead>
-                  <TableHead>Người xác nhận</TableHead>
-                  <TableHead>Số lượng NVL</TableHead>
-                  <TableHead>Trạng thái</TableHead>
-                  <TableHead className="w-[120px]">Hành động</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {requests.map((req) => (
-                  <TableRow key={req.id} className="hover:bg-slate-50">
-                    <TableCell>{req.id}</TableCell>
-                    <TableCell>{req.date}</TableCell>
-                    <TableCell>{req.confirmer}</TableCell>
-                    <TableCell>{req.materials.length} loại</TableCell>
-                    <TableCell>
-                      <span className="inline-block bg-yellow-50 text-yellow-800 px-2 py-0.5 rounded-full text-xs">{req.status}</span>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex gap-2">
-                        <Button size="sm" variant="ghost" onClick={() => openRequestDetail(req)}>
-                          Xem
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  return (
-    <div className="container mx-auto py-6 space-y-6">
-      <div className="px-4 py-2 text-primary border-b-2 border-primary inline-block rounded-md">Lập phiếu mua NVL</div>
-
+  const renderForm = () => (
+    <div className="space-y-6">
       <Alert className="bg-orange-50 border-orange-200">
         <Info className="h-5 w-5 text-orange-500" />
         <AlertDescription className="text-orange-800 flex flex-col gap-2">
@@ -533,7 +187,7 @@ export default function RequestPurchasePage() {
           ) : (
             <ul className="list-disc ml-6">
               {suggestedShortages.map((s) => (
-                <li key={s.name} className="cursor-pointer hover:underline" onClick={() => { setSelectedMaterial(s.name); setQuantity(String(s.need)); setUnit(s.unit); window.scrollTo({ top: 300, behavior: 'smooth' }); }}>
+                <li key={s.name} className="cursor-pointer hover:underline" onClick={() => { setSelectedMaterial(s.name); setQuantity(String(s.need)); setUnit(s.unit); }}>
                   {s.name}: {s.need} {s.unit} <span className="text-xs text-slate-600">(click để thêm vào phiếu)</span>
                 </li>
               ))}
@@ -542,7 +196,7 @@ export default function RequestPurchasePage() {
         </AlertDescription>
       </Alert>
 
-      <div className="space-y-4">
+      <div className="rounded-lg border bg-white p-6 space-y-6">
         <div>
           <h2 className="text-lg font-semibold">Lập Phiếu Đề Xuất Mua NVL</h2>
           <p className="text-sm text-muted-foreground">Nhập thông tin để tạo phiếu đề xuất mua nguyên vật liệu</p>
@@ -578,7 +232,7 @@ export default function RequestPurchasePage() {
             <h3 className="font-medium">Thêm nguyên vật liệu</h3>
           </div>
 
-            <div className="grid grid-cols-[1fr,auto,auto,auto] gap-4 items-end">
+          <div className="grid grid-cols-[1fr,auto,auto,auto] gap-4 items-end">
             <div className="space-y-2">
               <label className="text-sm font-medium">Chọn NVL</label>
               <Select value={selectedMaterial} onValueChange={setSelectedMaterial}>
@@ -602,19 +256,19 @@ export default function RequestPurchasePage() {
                 className="w-32"
               />
             </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Đơn vị</label>
-                <Select value={unit} onValueChange={setUnit}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="lít">lít</SelectItem>
-                    <SelectItem value="kg">kg</SelectItem>
-                    <SelectItem value="cái">cái</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Đơn vị</label>
+              <Select value={unit} onValueChange={setUnit}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="lít">lít</SelectItem>
+                  <SelectItem value="kg">kg</SelectItem>
+                  <SelectItem value="cái">cái</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             <Button onClick={handleAddMaterial} className="mb-0.5">
               <span>Thêm</span>
               <svg className="w-4 h-4 ml-1" viewBox="0 0 24 24" fill="none">
@@ -681,32 +335,175 @@ export default function RequestPurchasePage() {
           </Button>
         </div>
       </div>
+    </div>
+  )
+
+  const renderList = () => (
+    <div className="rounded-lg border bg-white p-6">
+      <div className="flex justify-between items-center mb-4">
+        <div>
+          <h4 className="font-medium">Danh sách Phiếu Đề Xuất Mua NVL</h4>
+          <p className="text-sm text-slate-600">Các phiếu đề xuất đã được tạo</p>
+        </div>
+        <Button onClick={() => setActiveTab('form')} className="bg-slate-900 text-white hover:bg-slate-800">
+          Lập phiếu mới
+        </Button>
+      </div>
+
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Mã phiếu</TableHead>
+            <TableHead>Ngày lập</TableHead>
+            <TableHead>Người xác nhận</TableHead>
+            <TableHead>Số lượng NVL</TableHead>
+            <TableHead>Trạng thái</TableHead>
+            <TableHead className="w-[120px]">Hành động</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {requests.map((req) => (
+            <TableRow key={req.id} className="hover:bg-slate-50">
+              <TableCell>{req.id}</TableCell>
+              <TableCell>{req.date}</TableCell>
+              <TableCell>{req.confirmer}</TableCell>
+              <TableCell>{req.materials.length} loại</TableCell>
+              <TableCell>
+                <span className="inline-block bg-yellow-50 text-yellow-800 px-2 py-0.5 rounded-full text-xs">{req.status}</span>
+              </TableCell>
+              <TableCell>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="ghost" onClick={() => openRequestDetail(req)}>
+                    Xem
+                  </Button>
+                </div>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  )
+
+  if (success) {
+    return (
+      <div className="container mx-auto py-6 space-y-6">
+        <div className="flex gap-4 border-b">
+          <button
+            className={`px-4 py-2 ${activeTab === 'form' ? 'text-primary border-b-2 border-primary' : 'text-gray-600 hover:text-gray-900'}`}
+            onClick={() => setActiveTab('form')}
+          >
+            Lập phiếu mua NVL
+          </button>
+          <button
+            className={`px-4 py-2 ${activeTab === 'list' ? 'text-primary border-b-2 border-primary' : 'text-gray-600 hover:text-gray-900'}`}
+            onClick={() => setActiveTab('list')}
+          >
+            Danh sách phiếu đề xuất
+          </button>
+        </div>
+
+        <div className="rounded-lg border bg-white px-6 py-6 space-y-6">
+          <div className="flex items-start gap-4">
+            <div className="flex-none text-green-600">
+              <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none">
+                <path d="M22 4L12 14.01L9 11.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+            <div className="flex-1">
+              <h3 className="text-lg font-medium">Lập Phiếu Thành Công</h3>
+              <p className="text-sm text-slate-600 mt-1">Phiếu đề xuất mua NVL đã được lưu vào hệ thống</p>
+
+              <div className="mt-4 bg-green-50 border border-green-100 rounded-md p-3">
+                <p className="text-sm text-green-800">Phiếu đề xuất đã được lưu với trạng thái "Chờ phê duyệt". Ban giám đốc đã nhận được thông báo.</p>
+              </div>
+
+              <div className="mt-6">
+                <Button onClick={handleCreateNew} className="bg-slate-900 text-white hover:bg-slate-800">
+                  Lập phiếu mới
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="container mx-auto py-6 space-y-6">
+      <div className="flex gap-4 border-b">
+        <button
+          className={`px-4 py-2 ${activeTab === 'form' ? 'text-primary border-b-2 border-primary' : 'text-gray-600 hover:text-gray-900'}`}
+          onClick={() => setActiveTab('form')}
+        >
+          Lập phiếu mua NVL
+        </button>
+        <button
+          className={`px-4 py-2 ${activeTab === 'list' ? 'text-primary border-b-2 border-primary' : 'text-gray-600 hover:text-gray-900'}`}
+          onClick={() => setActiveTab('list')}
+        >
+          Danh sách phiếu đề xuất
+        </button>
+      </div>
+
+      {activeTab === 'form' ? renderForm() : renderList()}
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Xác nhận lập phiếu</DialogTitle>
-            <DialogDescription>
-              Hệ thống sẽ kiểm tra dữ liệu và lưu phiếu vào CSDL với trạng thái &quot;Chờ phê duyệt&quot;. Ban giám đốc sẽ nhận được thông báo về phiếu đề xuất này.
-            </DialogDescription>
+            <DialogTitle>Xác nhận tạo phiếu</DialogTitle>
+            <DialogDescription>Xác nhận thông tin phiếu đề xuất mua nguyên vật liệu</DialogDescription>
           </DialogHeader>
 
-          <div className="py-4">
-            <h4 className="font-medium">Thông tin phiếu đề xuất:</h4>
-            <ul className="mt-2 space-y-1">
-              <li>• Ngày lập: {date}</li>  
-              <li>• Người xác nhận: {confirmer}</li>
-              <li>• Số lượng NVL: {materials.length} loại</li>
-            </ul>
+          <div className="py-2">
+            <div className="rounded-md bg-slate-50 p-4">
+              <dl className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <dt className="text-slate-600">Ngày lập phiếu</dt>
+                  <dd className="font-medium mt-1">{date}</dd>
+                </div>
+                <div>
+                  <dt className="text-slate-600">Người xác nhận</dt>
+                  <dd className="font-medium mt-1">{confirmer}</dd>
+                </div>
+              </dl>
+            </div>
+
+            <div className="mt-4">
+              <h4 className="font-medium mb-2">Danh sách nguyên vật liệu</h4>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Tên NVL</TableHead>
+                    <TableHead>Số lượng</TableHead>
+                    <TableHead>Đơn vị</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {materials.map((m, i) => (
+                    <TableRow key={i}>
+                      <TableCell>{m.name}</TableCell>
+                      <TableCell>{m.requestQuantity}</TableCell>
+                      <TableCell>{m.unit}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)}>Quay lại</Button>
-            <Button onClick={handleConfirm}>Xác nhận</Button>
+            <Button variant="outline" onClick={() => setOpen(false)}>
+              Huỷ
+            </Button>
+            <Button onClick={handleConfirm}>
+              Xác nhận
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      {/* Detail dialog for viewing a saved request */}
+
       <Dialog open={detailOpen} onOpenChange={setDetailOpen}>
         <DialogContent>
           <DialogHeader>
@@ -769,6 +566,3 @@ export default function RequestPurchasePage() {
     </div>
   )
 }
->>>>>>> origin/thaibao-feature
-=======
->>>>>>> origin/PhanHongLieu

@@ -1,36 +1,38 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useAuth } from "@/lib/auth-context"
 import { Button } from "@/components/ui/button"
-import { BarChart3, Package, Users, Warehouse, CheckCircle, FileText, LogOut, Menu, X } from "lucide-react"
+import {
+  BarChart3,
+  Package,
+  Users,
+  Warehouse,
+  CheckCircle,
+  FileText,
+  LogOut,
+  Menu,
+  X,
+} from "lucide-react"
 
-<<<<<<< HEAD
 interface SubMenuItem {
   label: string
   href: string
   roles: string[]
 }
 
-=======
->>>>>>> origin/PhanHongLieu
 interface MenuItem {
   label: string
   href: string
   icon: React.ComponentType<{ size: number }>
   roles: string[]
-<<<<<<< HEAD
-
   submenu?: SubMenuItem[]
-
-=======
->>>>>>> origin/PhanHongLieu
 }
 
+// 🔹 Danh sách menu theo quyền
 const menuItems: MenuItem[] = [
   {
     label: "Thống Kê",
@@ -52,12 +54,6 @@ const menuItems: MenuItem[] = [
   },
   {
     label: "Kho NVL",
-<<<<<<< HEAD
-
-    href: "/warehouse/raw-materials/import",
-    icon: Warehouse,
-    roles: ["warehouse_raw", "manager", "director"],
-
     href: "/warehouse/raw-materials",
     icon: Warehouse,
     roles: ["warehouse_raw", "manager", "director"],
@@ -72,13 +68,7 @@ const menuItems: MenuItem[] = [
         href: "/warehouse/raw-materials/request-purchase",
         roles: ["warehouse_raw", "manager", "director"],
       },
-    ]
-
-=======
-    href: "/warehouse/raw-materials/import",
-    icon: Warehouse,
-    roles: ["warehouse_raw", "manager", "director"],
->>>>>>> origin/PhanHongLieu
+    ],
   },
   {
     label: "Kho Thành Phẩm",
@@ -98,17 +88,6 @@ const menuItems: MenuItem[] = [
     icon: FileText,
     roles: ["manager", "supervisor", "director"],
   },
-<<<<<<< HEAD
-
-  // KPI menu for production manager
-  {
-    label: "Lập báo cáo KPI",
-    href: "/statistics/kpi/create",
-    icon: FileText,
-    // Only production manager (Quản lý sản xuất) can create KPI reports
-    roles: ["manager"],
-  },
-  // Supervisor (Xưởng trưởng) can create KPI draft (phiếu KPI)
   {
     label: "Tạo Phiếu KPI",
     href: "/statistics/kpi/drafts/create",
@@ -116,15 +95,17 @@ const menuItems: MenuItem[] = [
     roles: ["supervisor"],
   },
   {
+    label: "Lập báo cáo KPI",
+    href: "/statistics/kpi/create",
+    icon: FileText,
+    roles: ["manager"],
+  },
+  {
     label: "Duyệt Phiếu KPI",
     href: "/statistics/kpi/review",
     icon: CheckCircle,
     roles: ["manager", "director"],
   },
-=======
->>>>>>> origin/thaibao-feature
-=======
->>>>>>> origin/PhanHongLieu
   {
     label: "Phê Duyệt",
     href: "/approval/production-plan",
@@ -138,8 +119,6 @@ export default function Sidebar() {
   const { user, logout } = useAuth()
   const [isOpen, setIsOpen] = useState(true)
 
-<<<<<<< HEAD
-
   const roleLabels: Record<string, string> = {
     admin: "Admin",
     director: "Giám đốc",
@@ -151,10 +130,9 @@ export default function Sidebar() {
     worker: "Công nhân",
   }
 
-
-=======
->>>>>>> origin/PhanHongLieu
-  const filteredMenuItems = menuItems.filter((item) => item.roles.includes(user?.role || ""))
+  const filteredMenuItems = menuItems.filter((item) =>
+    item.roles.includes(user?.role || "")
+  )
 
   const handleLogout = () => {
     logout()
@@ -163,7 +141,7 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Mobile toggle */}
+      {/* 🔹 Nút mở/đóng sidebar trên mobile */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="md:hidden fixed top-4 left-4 z-50 p-2 bg-primary text-primary-foreground rounded-lg"
@@ -171,55 +149,32 @@ export default function Sidebar() {
         {isOpen ? <X size={20} /> : <Menu size={20} />}
       </button>
 
-      {/* Sidebar */}
+      {/* 🔹 Sidebar chính */}
       <aside
         className={`${
           isOpen ? "translate-x-0" : "-translate-x-full"
         } md:translate-x-0 fixed md:relative w-64 h-screen bg-sidebar text-sidebar-foreground transition-transform duration-300 z-40 flex flex-col border-r border-sidebar-border`}
       >
-<<<<<<< HEAD
-
-        {/* Logo / User info */}
+        {/* Thông tin người dùng */}
         <div className="p-6 border-b border-sidebar-border">
-          <h1 className="text-xl font-bold text-sidebar-primary">Công ty An Phát</h1>
-          <p className="text-sm font-medium mt-1">{user?.name ?? user?.email ?? "Khách"}</p>
-          <p className="text-xs text-sidebar-foreground/60 mt-1">{user ? roleLabels[user.role] ?? user.role : "Chưa đăng nhập"}</p>
-
-=======
->>>>>>> origin/PhanHongLieu
-        {/* Logo */}
-        <div className="p-6 border-b border-sidebar-border">
-          <h1 className="text-xl font-bold text-sidebar-primary">Công ty An Phát</h1>
-          <p className="text-xs text-sidebar-foreground/60 mt-1">Quản Lý Sản Xuất</p>
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/PhanHongLieu
+          <h1 className="text-xl font-bold text-sidebar-primary">
+            Công ty An Phát
+          </h1>
+          <p className="text-sm font-medium mt-1">
+            {user?.name ?? user?.email ?? "Khách"}
+          </p>
+          <p className="text-xs text-sidebar-foreground/60 mt-1">
+            {user ? roleLabels[user.role] ?? user.role : "Chưa đăng nhập"}
+          </p>
         </div>
 
-        {/* Menu Items */}
+        {/* Menu */}
         <nav className="flex-1 overflow-y-auto p-4 space-y-2">
           {filteredMenuItems.map((item) => {
             const Icon = item.icon
             const isActive = pathname.startsWith(item.href)
-            return (
-              <Link key={item.href} href={item.href}>
-                <Button
-                  variant={isActive ? "default" : "ghost"}
-                  className={`w-full justify-start gap-3 ${
-                    isActive
-                      ? "bg-sidebar-primary text-sidebar-primary-foreground"
-                      : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                  }`}
-                >
-                  <Icon size={18} />
-                  <span>{item.label}</span>
-                </Button>
-              </Link>
-<<<<<<< HEAD
-            )}
             const hasSubmenu = item.submenu && item.submenu.length > 0
-            
+
             return (
               <div key={item.href} className="space-y-1">
                 <Link href={item.href}>
@@ -235,7 +190,7 @@ export default function Sidebar() {
                     <span>{item.label}</span>
                   </Button>
                 </Link>
-                
+
                 {hasSubmenu && (
                   <div className="ml-6 space-y-1">
                     {item.submenu?.map((subItem) => {
@@ -258,9 +213,6 @@ export default function Sidebar() {
                   </div>
                 )}
               </div>
->>>>>>> origin/thaibao-feature
-=======
->>>>>>> origin/PhanHongLieu
             )
           })}
         </nav>
@@ -278,8 +230,13 @@ export default function Sidebar() {
         </div>
       </aside>
 
-      {/* Mobile overlay */}
-      {isOpen && <div className="md:hidden fixed inset-0 bg-black/50 z-30" onClick={() => setIsOpen(false)} />}
+      {/* Overlay mobile */}
+      {isOpen && (
+        <div
+          className="md:hidden fixed inset-0 bg-black/50 z-30"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
     </>
   )
 }
