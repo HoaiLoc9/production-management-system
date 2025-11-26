@@ -16,6 +16,9 @@ import {
   LogOut,
   Menu,
   X,
+  FileOutput,
+  Truck,
+  Calendar
 } from "lucide-react"
 
 interface SubMenuItem {
@@ -50,26 +53,34 @@ const menuItems: MenuItem[] = [
     label: "Phân Công & Chấm Công",
     href: "/work-assignment",
     icon: Users,
-    roles: ["manager", "supervisor", "director"],
+    roles: ["supervisor"],
   },
   {
-    label: "Kho NVL",
-    href: "/warehouse/raw-materials",
-    icon: Warehouse,
-    roles: ["warehouse_raw", "manager", "director"],
-    submenu: [
-      {
-        label: "Nhập kho",
-        href: "/warehouse/raw-materials/import",
-        roles: ["warehouse_raw", "manager", "director"],
-      },
-      {
-        label: "Lập phiếu đề xuất mua",
-        href: "/warehouse/raw-materials/request-purchase",
-        roles: ["warehouse_raw", "manager", "director"],
-      },
-    ],
+    label: "Lập phiếu giao thành phẩm",
+    href: "/statistics/supervisor/delivery",
+    icon:   FileOutput,
+    roles: ["supervisor"],
   },
+  
+   
+  {
+    label: "Nhập kho",
+    href: "/warehouse/raw-materials/import",
+    icon: Package,
+    roles: ["warehouse_raw"],
+  },
+  {
+    label: "Lập phiếu đề xuất mua",
+    href: "/warehouse/raw-materials/request-purchase",
+    icon: FileText,
+    roles: ["warehouse_raw"],
+  },
+  {
+  label: "Xuất kho",
+  href: "/warehouse/raw-materials/export",
+  icon: Truck,
+  roles: ["warehouse_raw"],
+},
   {
     label: "Kho Thành Phẩm",
     href: "/warehouse/products/import",
@@ -86,13 +97,13 @@ const menuItems: MenuItem[] = [
     label: "Phiếu & Yêu Cầu",
     href: "/requests/warehouse-request",
     icon: FileText,
-    roles: ["manager", "supervisor", "director"],
+    roles: ["manager", "supervisor","director"],
   },
   {
     label: "Tạo Phiếu KPI",
     href: "/statistics/kpi/drafts/create",
     icon: FileText,
-    roles: ["supervisor"],
+    roles: ["manager","supervisor"],
   },
   {
     label: "Lập báo cáo KPI",
@@ -111,6 +122,12 @@ const menuItems: MenuItem[] = [
     href: "/approval/production-plan",
     icon: CheckCircle,
     roles: ["director"],
+  },
+  {
+    label: "Lịch làm việc",
+    href: "/work-assignment/view",
+    icon: Calendar,
+    roles: ["worker"],
   },
 ]
 

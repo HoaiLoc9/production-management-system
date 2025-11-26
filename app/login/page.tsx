@@ -1,13 +1,11 @@
-"use client"
 
-import type React from "react"
+"use client"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/lib/auth-context"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -21,100 +19,78 @@ export default function LoginPage() {
     e.preventDefault()
     setLoading(true)
     setError("")
-
     try {
       await login(email, password)
       router.push("/dashboard/statistics")
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Đăng nhập thất bại")
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const demoAccounts = [
-    { email: "director@company.com", name: "Ban Giám Đốc", role: "director" },
-    { email: "manager@company.com", name: "Quản Lý Sản Xuất", role: "manager" },
-    { email: "supervisor@company.com", name: "Xưởng Trưởng", role: "supervisor" },
-    { email: "warehouse.raw@company.com", name: "Kho NVL", role: "warehouse_raw" },
-    { email: "warehouse.product@company.com", name: "Kho Thành Phẩm", role: "warehouse_product" },
-    { email: "qc@company.com", name: "QC", role: "qc" },
-    { email: "worker@company.com", name: "Công Nhân", role: "worker" },
-  ]
-
-  const handleQuickLogin = async (accountEmail: string) => {
-    setLoading(true)
-    setError("")
-    try {
-      await login(accountEmail, "password123")
-      router.push("/dashboard/statistics")
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Đăng nhập thất bại")
+    } catch (err: any) {
+      setError("Email hoặc mật khẩu không đúng")
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <div className="w-full max-w-2xl space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Đăng Nhập</CardTitle>
-            <CardDescription>Hệ Thống Quản Lý Sản Xuất Bàn Ghế</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div>
-                <label className="text-sm font-medium">Email</label>
-                <Input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="your@email.com"
-                  required
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium">Mật Khẩu</label>
-                <Input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  required
-                />
-              </div>
-              {error && <p className="text-sm text-destructive">{error}</p>}
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "Đang đăng nhập..." : "Đăng Nhập"}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden">
+        {/* HEADER */}
+        <div className="pt-10 pb-6 text-center">
+          <div className="mx-auto w-16 h-16 bg-[#0066FF] rounded-2xl flex items-center justify-center mb-4 shadow-lg">
+            <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900">Đăng Nhập</h1>
+          <p className="text-sm text-gray-600 mt-1">Hệ Thống Quản Lý Sản Xuất Bàn Ghế</p>
+        </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Tài Khoản Demo (7 Vai Trò)</CardTitle>
-            <CardDescription>Nhấp vào một tài khoản để đăng nhập nhanh</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {demoAccounts.map((account) => (
-                <button
-                  key={account.email}
-                  onClick={() => handleQuickLogin(account.email)}
-                  disabled={loading}
-                  className="p-3 text-left border rounded-lg hover:bg-muted transition-colors disabled:opacity-50"
-                >
-                  <div className="font-medium text-sm">{account.name}</div>
-                  <div className="text-xs text-muted-foreground">{account.email}</div>
-                  <div className="text-xs text-primary mt-1">password123</div>
-                </button>
-              ))}
+        {/* FORM */}
+        <div className="px-8 pb-10">
+          <form onSubmit={handleLogin} className="space-y-5">
+            <div className="space-y-1.5">
+              <label className="text-sm font-semibold text-gray-700">Email</label>
+              <Input
+                type="email"
+                placeholder="your@company.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="h-12 rounded-xl border-gray-300 focus:border-[#0066FF] focus:ring-[#0066FF]"
+              />
             </div>
-          </CardContent>
-        </Card>
+
+            <div className="space-y-1.5">
+              <label className="text-sm font-semibold text-gray-700">Mật Khẩu</label>
+              <Input
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="h-12 rounded-xl border-gray-300 focus:border-[#0066FF] focus:ring-[#0066FF]"
+              />
+            </div>
+
+            {error && (
+              <div className="bg-red-50 text-red-700 px-4 py-3 rounded-xl text-sm text-center font-medium">
+                {error}
+              </div>
+            )}
+
+            {/* NÚT ĐĂNG NHẬP – MÀU XANH "NHẬP KHO" CHUẨN 100% */}
+            <Button
+              type="submit"
+              disabled={loading}
+              className="w-full h-12 text-lg font-bold text-white rounded-xl shadow-lg"
+              style={{ backgroundColor: "#0066FF" }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#0055EE"}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#0066FF"}
+            >
+              {loading ? "Đang đăng nhập..." : "Đăng Nhập"}
+            </Button>
+
+            
+          </form>
+        </div>
       </div>
     </div>
   )

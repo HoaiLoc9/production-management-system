@@ -8,7 +8,6 @@ export interface User {
   email: string
   name: string
   role: "admin" | "director" | "manager" | "supervisor" | "warehouse_raw" | "warehouse_product" | "qc" | "worker"
-  department?: string
 }
 
 interface AuthContextType {

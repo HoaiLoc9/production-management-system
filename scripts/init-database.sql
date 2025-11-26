@@ -5,16 +5,8 @@
 >>>>>>> origin/thaibao-feature
 =======
 >>>>>>> origin/PhanHongLieu
--- Create users table
-CREATE TABLE IF NOT EXISTS users (
-  id SERIAL PRIMARY KEY,
-  email VARCHAR(255) UNIQUE NOT NULL,
-  password VARCHAR(255) NOT NULL,
-  name VARCHAR(255) NOT NULL,
-  role VARCHAR(50) NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+
+
 
 -- Create production plans table
 CREATE TABLE IF NOT EXISTS production_plans (
@@ -141,10 +133,4 @@ CREATE TABLE IF NOT EXISTS qc_defects (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Insert sample users
-INSERT INTO users (email, password, name, role) VALUES
-('manager@company.com', 'password123', 'Nguyễn Văn A', 'manager'),
-('director@company.com', 'password123', 'Trần Văn B', 'director'),
-('supervisor@company.com', 'password123', 'Lê Văn C', 'supervisor'),
-('warehouse@company.com', 'password123', 'Phạm Văn D', 'warehouse_raw'),
-('qc@company.com', 'password123', 'Hoàng Văn E', 'qc');
+
