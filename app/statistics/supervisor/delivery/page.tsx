@@ -31,7 +31,8 @@ interface OrderProduct {
 
 export default function DeliveryOrderPage() {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
+
   const [orders, setOrders] = useState<DeliveryOrderDetail[]>([]);
   const [selectedOrderId, setSelectedOrderId] = useState("");
   const [selectedOrder, setSelectedOrder] = useState<DeliveryOrderDetail | null>(null);
@@ -41,14 +42,15 @@ export default function DeliveryOrderPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [products, setProducts] = useState<OrderProduct[]>([]);
 
-  // Kiểm tra quyền
+   // ---- KIỂM TRA LOGIN & QUYỀN ----
   useEffect(() => {
-    if (user && user.role !== "supervisor") {
-      setError("Chỉ Supervisor mới có quyền lập phiếu giao thành phẩm");
+    if (!isAuthenticated) {
+      router.replace("/login");
+    } else if (user?.role !== "supervisor") {
+      setError("Chỉ xưởng trưởng mới có quyền lập phiếu giao thành phẩm");
       setTimeout(() => router.push("/dashboard/statistics"), 1500);
-      return;
     }
-  }, [user, router]);
+  }, [user, isAuthenticated, router]);
 
   // Lấy danh sách phiếu giao
   useEffect(() => {

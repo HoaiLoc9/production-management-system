@@ -37,11 +37,13 @@ interface MenuItem {
 
 // 🔹 Danh sách menu theo quyền
 const menuItems: MenuItem[] = [
+  
+
   {
     label: "Thống Kê",
     href: "/dashboard/statistics",
     icon: BarChart3,
-    roles: ["admin", "manager", "director"],
+    roles: ["manager", "director"],
   },
   {
     label: "Kế Hoạch Sản Xuất",
@@ -62,7 +64,7 @@ const menuItems: MenuItem[] = [
     roles: ["supervisor"],
   },
   
-   
+  
   {
     label: "Nhập kho",
     href: "/warehouse/raw-materials/import",

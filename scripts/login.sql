@@ -54,6 +54,7 @@ EXECUTE FUNCTION update_users_updated_at();
 -- Password sẽ tự động hash
 -- ===============================
 INSERT INTO users (email, password, role, name) VALUES
+('admin@company.com', 'password123', 'admin', 'Trần Thị Mỹ Q'),
 ('director@company.com', 'password123', 'director', 'Trần Văn B'),
 ('manager@company.com', 'password123', 'manager', 'Nguyễn Văn A'),
 ('supervisorA@company.com', 'password123', 'supervisor', 'Nguyễn Văn X1'),
