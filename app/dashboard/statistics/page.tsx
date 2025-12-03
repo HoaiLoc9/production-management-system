@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import * as XLSX from "xlsx";// ✅ chỉ cần utils & writeFile
+import React, { useState, useEffect } from "react";
+import * as XLSX from "xlsx";
 import {
   BarChart,
   Bar,
@@ -107,27 +107,33 @@ const demoData = {
 
 // ========== MAIN COMPONENT ==========
 export default function StatisticsPage() {
-  const [period, setPeriod] = useState("month");
-  const data = demoData[period];
+  const [period, setPeriod] = useState<"month" | "quarter" | "year">("month");
+  const [data, setData] = useState(demoData[period]);
 
-  // ✅ Xuất file Excel
-const exportToExcel = () => {
-  const wb = XLSX.utils.book_new();
-  const woodSheet = XLSX.utils.json_to_sheet(data.materials.wood);
-  const accessorySheet = XLSX.utils.json_to_sheet(data.materials.accessories);
-  const productSheet = XLSX.utils.json_to_sheet(data.products);
+  // Cập nhật data khi period thay đổi
+  useEffect(() => {
+    setData(demoData[period]);
+  }, [period]);
 
-  XLSX.utils.book_append_sheet(wb, woodSheet, "Gỗ");
-  XLSX.utils.book_append_sheet(wb, accessorySheet, "Phụ kiện");
-  XLSX.utils.book_append_sheet(wb, productSheet, "Thành phẩm");
+  // Xuất Excel
+  const exportToExcel = () => {
+    if (!data) return;
+    const wb = XLSX.utils.book_new();
 
-  XLSX.writeFile(wb, `ThongKe_${period}.xlsx`);
-};
+    const woodSheet = XLSX.utils.json_to_sheet(data.materials.wood);
+    const accessorySheet = XLSX.utils.json_to_sheet(data.materials.accessories);
+    const productSheet = XLSX.utils.json_to_sheet(data.products);
 
+    XLSX.utils.book_append_sheet(wb, woodSheet, "Gỗ");
+    XLSX.utils.book_append_sheet(wb, accessorySheet, "Phụ kiện");
+    XLSX.utils.book_append_sheet(wb, productSheet, "Thành phẩm");
+
+    XLSX.writeFile(wb, `ThongKe_${period}.xlsx`);
+  };
 
   return (
     <div className="p-6 space-y-8">
-      {/* Tiêu đề + Lọc thời gian + Xuất Excel */}
+      {/* Header + Filter + Export */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-foreground">📊 Thống Kê Sản Xuất Bàn Ghế</h1>
@@ -136,11 +142,10 @@ const exportToExcel = () => {
             {period === "month" ? "tháng" : period === "quarter" ? "quý" : "năm"}
           </p>
         </div>
-
         <div className="flex gap-3">
           <select
             value={period}
-            onChange={(e) => setPeriod(e.target.value)}
+            onChange={(e) => setPeriod(e.target.value as "month" | "quarter" | "year")}
             className="border rounded-lg px-3 py-2 bg-background text-foreground"
           >
             <option value="month">Theo tháng</option>
@@ -166,7 +171,7 @@ const exportToExcel = () => {
           <div>
             <h3 className="font-semibold mb-3 text-gray-700">🪵 Nhóm gỗ</h3>
             <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={data.materials.wood}>
+              <BarChart data={data?.materials?.wood || []}>
                 <XAxis dataKey="name" />
                 <YAxis />
                 <Tooltip />
@@ -184,13 +189,13 @@ const exportToExcel = () => {
               <ResponsiveContainer width="100%" height={260}>
                 <PieChart>
                   <Pie
-                    data={data.materials.accessories}
+                    data={data?.materials?.accessories || []}
                     dataKey="used"
                     nameKey="name"
                     outerRadius={90}
                     label
                   >
-                    {data.materials.accessories.map((entry, index) => (
+                    {(data?.materials?.accessories || []).map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
@@ -199,7 +204,7 @@ const exportToExcel = () => {
               </ResponsiveContainer>
 
               <ResponsiveContainer width="100%" height={260}>
-                <BarChart data={data.materials.accessories}>
+                <BarChart data={data?.materials?.accessories || []}>
                   <XAxis dataKey="name" />
                   <YAxis />
                   <Tooltip />
@@ -219,7 +224,7 @@ const exportToExcel = () => {
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={350}>
-            <BarChart data={data.products}>
+            <BarChart data={data?.products || []}>
               <XAxis dataKey="name" />
               <YAxis />
               <Tooltip />
