@@ -108,7 +108,7 @@ const demoData = {
 // ========== MAIN COMPONENT ==========
 export default function StatisticsPage() {
   const [period, setPeriod] = useState("month");
-  const data = demoData[period];
+  const data = demoData[period as "month" | "quarter" | "year"];
 
   // ✅ Xuất file Excel
 const exportToExcel = () => {

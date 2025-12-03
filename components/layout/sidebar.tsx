@@ -54,18 +54,23 @@ const menuItems: MenuItem[] = [
   },
   {
     label: "Kho NVL",
-    href: "/warehouse/raw-materials",
+    href: "/warehouse/materials",
     icon: Warehouse,
     roles: ["warehouse_raw", "manager", "director"],
     submenu: [
       {
         label: "Nhập kho",
-        href: "/warehouse/raw-materials/import",
+        href: "/warehouse/materials/import",
         roles: ["warehouse_raw", "manager", "director"],
       },
+        {
+          label: "Xuất kho",
+          href: "/warehouse/materials/export",
+          roles: ["warehouse_raw", "manager", "director"],
+        },
       {
-        label: "Lập phiếu đề xuất mua",
-        href: "/warehouse/raw-materials/request-purchase",
+        label: "Lập phiếu mua NVL",
+        href: "/warehouse/materials/purchase",
         roles: ["warehouse_raw", "manager", "director"],
       },
     ],
@@ -81,6 +86,18 @@ const menuItems: MenuItem[] = [
     href: "/qc/defect-product",
     icon: CheckCircle,
     roles: ["qc", "manager", "director"],
+    submenu: [
+      {
+        label: "Quản lý phiếu NVL",
+        href: "/qc/QLPNVL_loi",
+        roles: ["qc", "manager", "director"],
+      },
+            {
+        label: "Quản lý phiếu Thành phẩm lỗi",
+        href: "/qc/QLPThanhPham_loi",
+        roles: ["qc", "manager", "director"],
+      },
+    ],
   },
   {
     label: "Phiếu & Yêu Cầu",
