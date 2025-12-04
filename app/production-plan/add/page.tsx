@@ -1,8 +1,8 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { useState, useEffect } from "react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -27,36 +27,119 @@ interface Material {
   needToPurchase: string
 }
 
+interface Order {
+  id: number
+  code: string
+  customer: string
+  product: string
+  quantity: number
+  deliveryDate: string
+  status: string
+}
+
 export default function AddProductionPlanPage() {
   const [planName, setPlanName] = useState("")
   const [orderCode, setOrderCode] = useState("")
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
+  const [orders, setOrders] = useState<Order[]>([])
   const [startDate, setStartDate] = useState("")
   const [endDate, setEndDate] = useState("")
   const [showMaterialTable, setShowMaterialTable] = useState(false)
   const [products, setProducts] = useState<Product[]>([
-    { id: 1, name: "", quantity: "100", unit: "", estimate: "5000000", completion: "" },
+    { id: 1, name: "", quantity: "", unit: "", estimate: "", completion: "" },
   ])
   const [materials, setMaterials] = useState<Material[]>([])
 
+  // ✅ Tạo mã kế hoạch tự động không trùng lặp
+  const generateUniquePlanCode = (): string => {
+    const existingPlans = JSON.parse(localStorage.getItem("productionPlans") || "[]")
+    const existingCodes = new Set(existingPlans.map((p: any) => p.code))
+    
+    let newCode: string
+    do {
+      const randomNum = Math.floor(Math.random() * 9000) + 1000
+      newCode = `KH-${new Date().getFullYear()}-${randomNum}`
+    } while (existingCodes.has(newCode))
+    
+    return newCode
+  }
+
+  // ✅ Load đơn hàng và tạo mã kế hoạch khi component mount
+  useEffect(() => {
+    const savedOrders = JSON.parse(localStorage.getItem("orders") || "[]")
+    setOrders(savedOrders)
+    
+    if (!planName) {
+      setPlanName(generateUniquePlanCode())
+    }
+  }, [])
+
+  // ✅ Khi chọn đơn hàng, tự động điền thông tin
+  const handleOrderChange = (code: string) => {
+    setOrderCode(code)
+    const order = orders.find(o => o.code === code)
+    if (order) {
+      setSelectedOrder(order)
+      // Tự động điền sản phẩm và số lượng từ đơn hàng
+      setProducts([{
+        id: 1,
+        name: order.product,
+        quantity: order.quantity.toString(),
+        unit: "Cái",
+        estimate: "",
+        completion: order.deliveryDate
+      }])
+    }
+  }
+
   const materialRequirements: Record<string, Array<{ name: string; unit: string; quantity: number; inStock: number }>> = {
     "Ghế Gỗ": [
-      { name: "Gỗ ", unit: "m³", quantity: 0.08, inStock: 50 },
+      { name: "Gỗ", unit: "m³", quantity: 0.08, inStock: 50 },
       { name: "Sơn PU", unit: "Lít", quantity: 0.5, inStock: 100 },
       { name: "Vít gỗ", unit: "Hộp", quantity: 2, inStock: 200 },
       { name: "Keo dán gỗ", unit: "Kg", quantity: 0.3, inStock: 80 },
     ],
     "Bàn Gỗ": [
-      { name: "Gỗ ", unit: "m³", quantity: 0.15, inStock: 50 },
+      { name: "Gỗ", unit: "m³", quantity: 0.15, inStock: 50 },
       { name: "Sơn PU", unit: "Lít", quantity: 1.2, inStock: 100 },
       { name: "Vít gỗ", unit: "Hộp", quantity: 3, inStock: 200 },
       { name: "Keo dán gỗ", unit: "Kg", quantity: 0.5, inStock: 80 },
       { name: "Chân bàn kim loại", unit: "Bộ", quantity: 1, inStock: 30 },
+    ],
+    "Ghế gỗ cao cấp": [
+      { name: "Gỗ", unit: "m³", quantity: 0.08, inStock: 50 },
+      { name: "Sơn PU", unit: "Lít", quantity: 0.5, inStock: 100 },
+      { name: "Vít gỗ", unit: "Hộp", quantity: 2, inStock: 200 },
+      { name: "Keo dán gỗ", unit: "Kg", quantity: 0.3, inStock: 80 },
+    ],
+    "Bàn gỗ sồi": [
+      { name: "Gỗ sồi", unit: "m³", quantity: 0.2, inStock: 30 },
+      { name: "Sơn PU", unit: "Lít", quantity: 1.5, inStock: 100 },
+      { name: "Vít gỗ", unit: "Hộp", quantity: 3, inStock: 200 },
+      { name: "Keo dán gỗ", unit: "Kg", quantity: 0.6, inStock: 80 },
+    ],
+    "Tủ gỗ sồi": [
+      { name: "Gỗ sồi", unit: "m³", quantity: 0.3, inStock: 30 },
+      { name: "Sơn PU", unit: "Lít", quantity: 2, inStock: 100 },
+      { name: "Vít gỗ", unit: "Hộp", quantity: 5, inStock: 200 },
+      { name: "Keo dán gỗ", unit: "Kg", quantity: 1, inStock: 80 },
+      { name: "Bản lề", unit: "Bộ", quantity: 4, inStock: 150 },
+    ],
+    "Bàn làm việc gỗ": [
+      { name: "Gỗ", unit: "m³", quantity: 0.18, inStock: 50 },
+      { name: "Sơn PU", unit: "Lít", quantity: 1.3, inStock: 100 },
+      { name: "Vít gỗ", unit: "Hộp", quantity: 3, inStock: 200 },
+      { name: "Keo dán gỗ", unit: "Kg", quantity: 0.5, inStock: 80 },
     ],
   }
 
   const productUnits: Record<string, string> = {
     "Ghế Gỗ": "Cái",
     "Bàn Gỗ": "Cái",
+    "Ghế gỗ cao cấp": "Cái",
+    "Bàn gỗ sồi": "Cái",
+    "Tủ gỗ sồi": "Cái",
+    "Bàn làm việc gỗ": "Cái",
   }
 
   const addProduct = () => {
@@ -81,7 +164,7 @@ export default function AddProductionPlanPage() {
     setProducts(updatedProducts)
   }
 
-  // ✅ Lưu kế hoạch vào localStorage
+  // ✅ Lưu kế hoạch và xóa đơn hàng khỏi danh sách
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -96,12 +179,15 @@ export default function AddProductionPlanPage() {
       return
     }
 
+    // Lưu kế hoạch mới
     const existingPlans = JSON.parse(localStorage.getItem("productionPlans") || "[]")
-    const newId = existingPlans.length > 0 ? Math.max(...existingPlans.map((p: any) => p.id)) + 1 : 3
+    const newId = existingPlans.length > 0 ? Math.max(...existingPlans.map((p: any) => p.id)) + 1 : 1
 
     const newPlan = {
       id: newId,
       code: planName,
+      orderCode: orderCode,
+      customer: selectedOrder?.customer || "",
       product: validProducts.map((p) => p.name).join(", "),
       quantity: validProducts.reduce((sum, p) => sum + (parseInt(p.quantity) || 0), 0),
       startDate,
@@ -112,7 +198,11 @@ export default function AddProductionPlanPage() {
     const updatedPlans = [...existingPlans, newPlan]
     localStorage.setItem("productionPlans", JSON.stringify(updatedPlans))
 
-    alert("✅ Kế hoạch đã được lưu thành công!")
+    // ✅ Xóa đơn hàng đã chọn khỏi danh sách
+    const updatedOrders = orders.filter(o => o.code !== orderCode)
+    localStorage.setItem("orders", JSON.stringify(updatedOrders))
+
+    alert("✅ Kế hoạch đã được lưu thành công và đơn hàng đã được chuyển vào kế hoạch!")
     window.location.href = "/production-plan"
   }
 
@@ -187,23 +277,46 @@ export default function AddProductionPlanPage() {
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium mb-2">Mã kế hoạch *</label>
-                  <Input type="text" placeholder="Nhập mã kế hoạch" value={planName} onChange={(e) => setPlanName(e.target.value)} />
+                  <Input 
+                    type="text" 
+                    placeholder="Mã tự động" 
+                    value={planName} 
+                    disabled
+                    className="bg-gray-100 cursor-not-allowed"
+                  />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium mb-2">Đơn hàng *</label>
-                  <Select value={orderCode} onValueChange={(v) => setOrderCode(v)}>
+                  <Select value={orderCode} onValueChange={handleOrderChange}>
                     <SelectTrigger>
                       <SelectValue placeholder="Chọn đơn hàng" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="DH001">DH-2025-001</SelectItem>
-                      <SelectItem value="DH002">DH-2025-002</SelectItem>
-                      <SelectItem value="DH003">DH-2025-003</SelectItem>
-                      <SelectItem value="DH004">DH-2025-004</SelectItem>
+                      {orders.length === 0 ? (
+                        <SelectItem value="no-orders" disabled>Không có đơn hàng nào</SelectItem>
+                      ) : (
+                        orders.map((order) => (
+                          <SelectItem key={order.id} value={order.code}>
+                            {order.code} - {order.customer} - {order.product}
+                          </SelectItem>
+                        ))
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
+
+                {selectedOrder && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h3 className="font-semibold text-sm mb-2 text-blue-900">Thông tin đơn hàng</h3>
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                      <div><span className="font-medium">Khách hàng:</span> {selectedOrder.customer}</div>
+                      <div><span className="font-medium">Sản phẩm:</span> {selectedOrder.product}</div>
+                      <div><span className="font-medium">Số lượng:</span> {selectedOrder.quantity}</div>
+                      <div><span className="font-medium">Ngày giao:</span> {selectedOrder.deliveryDate}</div>
+                    </div>
+                  </div>
+                )}
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -243,22 +356,21 @@ export default function AddProductionPlanPage() {
                     {products.map((p) => (
                       <tr key={p.id}>
                         <td className="px-4 py-3">
-                          <Select value={p.name} onValueChange={(v) => updateProduct(p.id, "name", v)}>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Chọn sản phẩm" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="Ghế Gỗ">Ghế Gỗ</SelectItem>
-                              <SelectItem value="Bàn Gỗ">Bàn Gỗ</SelectItem>
-                            </SelectContent>
-                          </Select>
+                          <Input 
+                            type="text" 
+                            value={p.name}
+                            onChange={(e) => updateProduct(p.id, "name", e.target.value)}
+                            placeholder="Nhập tên sản phẩm"
+                          />
                         </td>
                         <td className="px-4 py-3">
                           <Input type="number" value={p.quantity} onChange={(e) => updateProduct(p.id, "quantity", e.target.value)} />
                         </td>
-                        <td className="px-4 py-3">{p.unit}</td>
                         <td className="px-4 py-3">
-                          <Input type="number" value={p.estimate} onChange={(e) => updateProduct(p.id, "estimate", e.target.value)} />
+                          <Input type="text" value={p.unit} onChange={(e) => updateProduct(p.id, "unit", e.target.value)} />
+                        </td>
+                        <td className="px-4 py-3">
+                          <Input type="number" value={p.estimate} onChange={(e) => updateProduct(p.id, "estimate", e.target.value)} placeholder="0" />
                         </td>
                         <td className="px-4 py-3">
                           <Input type="date" value={p.completion} onChange={(e) => updateProduct(p.id, "completion", e.target.value)} />

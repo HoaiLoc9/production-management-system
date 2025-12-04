@@ -20,6 +20,8 @@ import {
   CardHeader,
   CardTitle
 } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#AA66CC"];
 
@@ -152,14 +154,69 @@ export default function StatisticsPage() {
             <option value="quarter">Theo quý</option>
             <option value="year">Theo năm</option>
           </select>
-          <button
+          <Button 
             onClick={exportToExcel}
-            className="bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded-lg"
+            className="bg-green-600 hover:bg-green-700 text-white font-medium"
           >
             ⬇️ Xuất Excel
-          </button>
+          </Button>
         </div>
       </div>
+
+      {/* Chọn dữ liệu xuất Excel */}
+      <Card className="bg-blue-50 border-blue-200">
+        <CardHeader>
+          <CardTitle className="text-lg">📥 Chọn dữ liệu cần thống kê</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Cột 1: Nhóm gỗ */}
+            <div className="space-y-3">
+              <h3 className="font-semibold text-gray-700 mb-3">🪵 Nhóm gỗ</h3>
+              <div className="flex items-center space-x-3">
+                <Checkbox 
+                  id="wood" 
+                  checked={selectedCategories.wood}
+                  onCheckedChange={() => handleCheckboxChange('wood')}
+                />
+                <label htmlFor="wood" className="text-sm font-medium cursor-pointer">
+                  Tất cả loại gỗ
+                </label>
+              </div>
+            </div>
+
+            {/* Cột 2: Phụ kiện */}
+            <div className="space-y-3">
+              <h3 className="font-semibold text-gray-700 mb-3">⚙️ Phụ kiện</h3>
+              <div className="flex items-center space-x-3">
+                <Checkbox 
+                  id="accessories" 
+                  checked={selectedCategories.accessories}
+                  onCheckedChange={() => handleCheckboxChange('accessories')}
+                />
+                <label htmlFor="accessories" className="text-sm font-medium cursor-pointer">
+                  Ốc vít, Bản lề, Ke sắt,...
+                </label>
+              </div>
+            </div>
+
+            {/* Cột 3: Thành phẩm */}
+            <div className="space-y-3">
+              <h3 className="font-semibold text-gray-700 mb-3">🪑 Thành phẩm</h3>
+              <div className="flex items-center space-x-3">
+                <Checkbox 
+                  id="products" 
+                  checked={selectedCategories.products}
+                  onCheckedChange={() => handleCheckboxChange('products')}
+                />
+                <label htmlFor="products" className="text-sm font-medium cursor-pointer">
+                  Bàn, Ghế, Tủ, Kệ,...
+                </label>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* NGUYÊN LIỆU */}
       <Card>
