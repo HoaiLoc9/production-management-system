@@ -148,3 +148,22 @@ INSERT INTO users (email, password, name, role) VALUES
 ('supervisor@company.com', 'password123', 'Lê Văn C', 'supervisor'),
 ('warehouse@company.com', 'password123', 'Phạm Văn D', 'warehouse_raw'),
 ('qc@company.com', 'password123', 'Hoàng Văn E', 'qc');
+
+-- Create order list table
+CREATE TABLE IF NOT EXISTS donhang (
+    id SERIAL PRIMARY KEY,
+    ma_don_hang VARCHAR(20) NOT NULL UNIQUE,
+    ten_khach_hang VARCHAR(255) NOT NULL,
+    san_pham VARCHAR(255) NOT NULL,
+    so_luong INT NOT NULL,
+    ngay_giao DATE NOT NULL,
+    trang_thai VARCHAR(100) NOT NULL
+);
+
+INSERT INTO donhang (ma_don_hang, ten_khach_hang, san_pham, so_luong, ngay_giao, trang_thai)
+VALUES
+('DH001', 'Công ty Minh Tâm', 'Ghế gỗ cao cấp', 150, '2025-11-15', 'Đang lên kế hoạch'),
+('DH002', 'Cửa hàng Nội thất Việt', 'Bàn gỗ sồi', 80, '2025-11-20', 'Chưa lên kế hoạch'),
+('DH003', 'Doanh nghiệp Tân Phát', 'Tủ gỗ sồi', 40, '2025-12-05', 'Đang xử lý'),
+('DH004', 'Công ty Đại Lộc', 'Bàn làm việc gỗ', 100, '2025-12-10', 'Chờ duyệt'),
+('DH005', 'Showroom Phúc Gia', 'Tủ gỗ công nghiệp', 75, '2025-12-25', 'Đang lên kế hoạch');
