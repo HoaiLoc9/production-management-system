@@ -51,6 +51,18 @@ const menuItems: MenuItem[] = [
     href: "/work-assignment",
     icon: Users,
     roles: ["manager", "supervisor", "director"],
+    submenu: [
+      {
+        label: "Phân Công",
+        href: "/work-assignment",
+        roles: ["manager", "supervisor", "director"],
+      },
+      {
+        label: "Chấm Công",
+        href: "/attendance",
+        roles: ["manager", "supervisor", "director"],
+      },
+    ],
   },
   {
     label: "Kho NVL",

@@ -7,31 +7,18 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from "@/components/ui/button"
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
-import Sidebar from "@/components/layout/sidebar" // Đường dẫn sidebar của bạn
+import Sidebar from "@/components/layout/sidebar"
 
 export default function WorkAssignments() {
   const { user } = useAuth()
-  const [open, setOpen] = useState(false)
+  const [plans, setPlans] = useState<any[]>([])
   const [selectedPlan, setSelectedPlan] = useState<any>(null)
-  const [assignments, setAssignments] = useState<{ [key: number]: string }>({})
+  const [assignments, setAssignments] = useState<Record<number, string>>({})
+  const [open, setOpen] = useState(false)
   const [error, setError] = useState("")
   const [successMessage, setSuccessMessage] = useState("")
   const [isReadOnly, setIsReadOnly] = useState(false)
-  const [plans, setPlans] = useState<any[]>([])
 
-  interface Plan {
-    id: string
-    orderCode: string
-    product: string
-    quantity: number
-    workshop: string
-    deliveryDate: string
-    importDate: string
-    note: string
-    assigned: boolean
-    assignedSteps: { [key: number]: string }
-  }
-  
   const workSteps = [
     "Cắt gỗ theo khuôn mẫu",
     "Bảo dưỡng bề mặt",
@@ -43,97 +30,39 @@ export default function WorkAssignments() {
     "Đóng gói",
   ]
 
+  // 🔹 Fetch danh sách kế hoạch
   useEffect(() => {
-    try {
-      const savedPlans = localStorage.getItem("plans")
-      const parsed = savedPlans ? JSON.parse(savedPlans) : null
-
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        setPlans(parsed)
-      } else {
+    async function fetchPlans() {
+      try {
+        const res = await fetch("/api/work-assignment/plans")
+        if (!res.ok) throw new Error("Không thể lấy kế hoạch")
+        const data = await res.json()
         setPlans([
-          {
-            id: "KH001",
-            orderCode: "#X7K9P2M5",
-            product: "Ghế gỗ cao cấp",
-            quantity: 500,
-            workshop: "Xưởng 1",
-            deliveryDate: "30/11/2025",
-            importDate: "25/11/2025",
-            note: "Ưu tiên hoàn thành trước thời hạn",
-            assigned: true,
-            assignedSteps: {
-              0: "to1",
-              1: "to2",
-              2: "to3",
-              3: "to4",
-              4: "to5",
-              5: "to6",
-              6: "to7",
-              7: "to8",
-            },
-          },
-          {
-            id: "KH002",
-            orderCode: "#A1B2C3D4",
-            product: "Bàn gỗ tròn",
-            quantity: 200,
-            workshop: "Xưởng 2",
-            deliveryDate: "10/12/2025",
-            importDate: "05/12/2025",
-            note: "Làm mẫu trưng bày",
-            assigned: false,
-            assignedSteps: {},
-          },
-          {
-            id: "KH003",
-            orderCode: "#28G68RTY",
-            product: "Tủ 3 cánh",
-            quantity: 100,
-            workshop: "Xưởng 2",
-            deliveryDate: "30/12/2025",
-            importDate: "20/11/2025",
-            note: "Ưu tiên hoàn thành trước thời hạn",
-            assigned: false,
-            assignedSteps: {},
-          },
-          {
-            id: "KH004",
-            orderCode: "#159654DR",
-            product: "Ghế gỗ cao cấp",
-            quantity: 500,
-            workshop: "Xưởng 1",
-            deliveryDate: "15/01/2026",
-            importDate: "25/11/2025",
-            note: "Ưu tiên hoàn thành trước thời hạn",
-            assigned: false,
-            assignedSteps: {},
-          },
+          ...data.approved.map((p: any) => ({ ...p, assigned: true, assignedSteps: {} })),
+          ...data.notApproved.map((p: any) => ({ ...p, assigned: false, assignedSteps: {} })),
         ])
+      } catch (err) {
+        console.error("Lỗi khi fetch plans:", err)
       }
-    } catch (err) {
-      console.error("Lỗi khi đọc localStorage:", err)
     }
+    fetchPlans()
   }, [])
 
-  useEffect(() => {
-    localStorage.setItem("plans", JSON.stringify(plans))
-  }, [plans])
-
+  // 🔹 Khi click vào kế hoạch (chỉ cho phép nếu chưa phân công)
   const handleClick = (plan: any) => {
+    if (plan.assigned) return // chặn click nếu đã phân công
     setSelectedPlan(plan)
     setOpen(true)
-    setError("")
     setIsReadOnly(plan.assigned)
-
-    if (plan.assigned && plan.assignedSteps) {
-      setAssignments({ ...plan.assignedSteps })
-    } else {
-      setAssignments({})
-    }
   }
 
-  const handleSave = () => {
+  // 🔹 Lưu phân công
+  const handleSave = async () => {
+    if (!user?.name) {
+      setError("Bạn chưa đăng nhập")
+      return
+    }
+
     const missingSteps = workSteps.filter((_, i) => !assignments[i])
     if (missingSteps.length > 0) {
       setError("Vui lòng chọn tổ thực hiện cho tất cả công đoạn.")
@@ -147,31 +76,42 @@ export default function WorkAssignments() {
       return
     }
 
-    if (!selectedPlan?.id) return
+    try {
+      const res = await fetch("/api/work-assignment/assignments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          plan_id: selectedPlan.id,
+          steps: assignments,
+          assigned_by: user.name,
+        }),
+      })
 
-    setPlans((prevPlans) =>
-      prevPlans.map((plan) =>
-        plan.id === selectedPlan.id
-          ? {
-              ...plan,
-              assigned: true,
-              assignedSteps: { ...assignments },
-            }
-          : plan
+      let data: any = {}
+      try { data = await res.json() } catch {}
+      if (!res.ok) throw new Error(data.message || "Lưu phân công thất bại")
+
+      // ✅ Cập nhật UI và DB
+      setSuccessMessage("Phân công thành công!")
+      setPlans(prev =>
+        prev.map(p =>
+          p.id === selectedPlan.id
+            ? { ...p, assigned: true, assignedSteps: { ...assignments } }
+            : p
+        )
       )
-    )
-
-    setOpen(false)
-    setAssignments({})
-    setError("")
-    setSuccessMessage("✅ Phân công thành công!")
-    setTimeout(() => setSuccessMessage(""), 3000)
+      setOpen(false)
+      setAssignments({})
+      setError("")
+      setTimeout(() => setSuccessMessage(""), 3000)
+    } catch (err: any) {
+      setError("Lỗi khi lưu phân công: " + err.message)
+    }
   }
 
   return (
     <div className="flex h-screen">
       <Sidebar />
-
       <main className="flex-1 p-8 overflow-y-auto space-y-6">
         <h1 className="text-3xl font-bold">Phân công công việc</h1>
 
@@ -186,33 +126,34 @@ export default function WorkAssignments() {
         </p>
 
         <div className="space-y-3">
-          {plans.map((plan) => (
+          {plans.map(plan => (
             <Card
               key={plan.id}
-              className="cursor-pointer hover:bg-muted transition-colors"
+              className={`transition-colors ${
+                plan.assigned ? "cursor-not-allowed opacity-60" : "cursor-pointer hover:bg-muted"
+              }`}
               onClick={() => handleClick(plan)}
             >
-              <CardContent className="p-4">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <p className="font-semibold">{plan.id} - {plan.orderCode}</p>
-                    <p className="text-sm text-muted-foreground">
-                      Sản phẩm: {plan.product} | Số lượng: {plan.quantity} | Xưởng: {plan.workshop}
-                    </p>
-                  </div>
-                  <div>
-                    {plan.assigned ? (
-                      <Badge className="bg-green-500 hover:bg-green-600">Đã phân công</Badge>
-                    ) : (
-                      <Badge variant="outline" className="text-red-500 border-red-400">Chưa phân công</Badge>
-                    )}
-                  </div>
+              <CardContent className="p-4 flex justify-between items-center">
+                <div>
+                  <p className="font-semibold">{plan.plan_code}</p>
+                  <p className="text-sm text-muted-foreground">
+                    Sản phẩm: {plan.product_type} | Số lượng: {plan.quantity} | Ngày bắt đầu: {plan.start_date} | Ngày kết thúc: {plan.end_date}
+                  </p>
+                </div>
+                <div>
+                  {plan.assigned ? (
+                    <Badge className="bg-green-500 hover:bg-green-600">Đã phân công</Badge>
+                  ) : (
+                    <Badge variant="outline" className="text-red-500 border-red-400">Chưa phân công</Badge>
+                  )}
                 </div>
               </CardContent>
             </Card>
           ))}
         </div>
 
+        {/* Dialog phân công */}
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
             <DialogHeader>
@@ -225,66 +166,53 @@ export default function WorkAssignments() {
             </DialogHeader>
 
             {selectedPlan && (
-              <>
+              <div className="space-y-4 pt-4">
                 <div className="border rounded-lg p-4 bg-gray-50">
-                  <h2 className="text-xl font-semibold mb-2">Chi tiết kế hoạch sản xuất</h2>
+                  <h2 className="text-xl font-semibold mb-2">Chi tiết kế hoạch</h2>
                   <div className="grid grid-cols-2 gap-y-2 text-sm">
-                    <div><strong>Mã kế hoạch:</strong> {selectedPlan.id}</div>
-                    <div><strong>Mã đơn hàng:</strong> {selectedPlan.orderCode}</div>
-                    <div><strong>Sản phẩm:</strong> {selectedPlan.product}</div>
+                    <div><strong>Mã kế hoạch:</strong> {selectedPlan.plan_code}</div>
+                    <div><strong>Sản phẩm:</strong> {selectedPlan.product_type}</div>
                     <div><strong>Số lượng:</strong> {selectedPlan.quantity}</div>
-                    <div><strong>Thời gian giao hàng:</strong> {selectedPlan.deliveryDate}</div>
-                    <div><strong>Thời gian nhập kho:</strong> {selectedPlan.importDate}</div>
-                    <div><strong>Xưởng:</strong> {selectedPlan.workshop}</div>
-                    <div><strong>Ghi chú:</strong> {selectedPlan.note}</div>
+                    <div><strong>Ngày bắt đầu:</strong> {selectedPlan.start_date}</div>
+                    <div><strong>Ngày kết thúc:</strong> {selectedPlan.end_date}</div>
+                    <div><strong>Ghi chú:</strong> {selectedPlan.note || "-"}</div>
                   </div>
                 </div>
 
-                <div className="space-y-4 pt-4">
-                  {workSteps.map((step, index) => (
-                    <div
-                      key={index}
-                      className="grid grid-cols-[1fr_240px] items-center border rounded-lg p-3 gap-4"
+                {workSteps.map((step, index) => (
+                  <div
+                    key={index}
+                    className="grid grid-cols-[1fr_240px] items-center border rounded-lg p-3 gap-4"
+                  >
+                    <span>{step}</span>
+                    <Select
+                      disabled={isReadOnly}
+                      value={assignments[index]}
+                      onValueChange={(value) => {
+                        if (!isReadOnly) setAssignments(prev => ({ ...prev, [index]: value }))
+                      }}
                     >
-                      <div className="flex items-center gap-3">
-                        <div className="w-6 h-6 flex items-center justify-center rounded-full bg-blue-600 text-white font-semibold">
-                          {index + 1}
-                        </div>
-                        <span>{step}</span>
-                      </div>
-                      <Select
-                        disabled={isReadOnly}
-                        value={assignments[index]}
-                        onValueChange={(value) => {
-                          if (!isReadOnly) {
-                            setAssignments((prev) => ({ ...prev, [index]: value }))
-                          }
-                        }}
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Chọn tổ thực hiện" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {[...Array(10)].map((_, i) => (
-                            <SelectItem key={i} value={`to${i + 1}`}>Tổ {i + 1}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  ))}
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Chọn tổ thực hiện" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {[...Array(10)].map((_, i) => (
+                          <SelectItem key={i} value={`to${i+1}`}>Tổ {i+1}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                ))}
 
-                  {!isReadOnly && error && (
-                    <p className="text-red-500 text-sm">{error}</p>
-                  )}
+                {!isReadOnly && error && <p className="text-red-500 text-sm">{error}</p>}
 
-                  {!isReadOnly && (
-                    <div className="flex justify-end gap-2 pt-4">
-                      <Button variant="outline" onClick={() => setOpen(false)}>Hủy</Button>
-                      <Button onClick={handleSave}>Lưu</Button>
-                    </div>
-                  )}
-                </div>
-              </>
+                {!isReadOnly && (
+                  <div className="flex justify-end gap-2 pt-4">
+                    <Button variant="outline" onClick={() => setOpen(false)}>Hủy</Button>
+                    <Button onClick={handleSave}>Lưu</Button>
+                  </div>
+                )}
+              </div>
             )}
           </DialogContent>
         </Dialog>
