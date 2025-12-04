@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import * as XLSX from "xlsx";
 import {
   BarChart,
@@ -109,84 +109,33 @@ const demoData = {
 
 // ========== MAIN COMPONENT ==========
 export default function StatisticsPage() {
-  const [period, setPeriod] = useState("month");
-  const [selectedCategories, setSelectedCategories] = useState({
-    wood: false,
-    accessories: false,
-    products: false
-  });
+  const [period, setPeriod] = useState<"month" | "quarter" | "year">("month");
+  const [data, setData] = useState(demoData[period]);
 
-  const data = demoData[period];
+  // Cập nhật data khi period thay đổi
+  useEffect(() => {
+    setData(demoData[period]);
+  }, [period]);
 
-  // Toggle checkbox
-  const handleCheckboxChange = (category) => {
-    setSelectedCategories(prev => ({
-      ...prev,
-      [category]: !prev[category]
-    }));
-  };
-
-  // ✅ Xuất file Excel chỉ với các mục đã chọn
+  // Xuất Excel
   const exportToExcel = () => {
-    const hasSelection = Object.values(selectedCategories).some(val => val);
-    
-    if (!hasSelection) {
-      alert("Vui lòng chọn ít nhất một loại dữ liệu để xuất!");
-      return;
-    }
-
+    if (!data) return;
     const wb = XLSX.utils.book_new();
 
-    // Hàm format header
-    const formatSheet = (data, sheetName) => {
-      const ws = XLSX.utils.json_to_sheet(data);
-      
-      // Lấy range của sheet
-      const range = XLSX.utils.decode_range(ws['!ref']);
-      
-      // Format header (hàng đầu tiên)
-      for (let C = range.s.c; C <= range.e.c; ++C) {
-        const address = XLSX.utils.encode_col(C) + "1";
-        if (!ws[address]) continue;
-        
-        // Thêm style cho header
-        ws[address].s = {
-          font: { bold: true, sz: 14 },
-          alignment: { horizontal: "center", vertical: "center" }
-        };
-      }
-      
-      // Set column width
-      ws['!cols'] = [
-        { wch: 20 },
-        { wch: 15 },
-        { wch: 15 }
-      ];
-      
-      return ws;
-    };
+    const woodSheet = XLSX.utils.json_to_sheet(data.materials.wood);
+    const accessorySheet = XLSX.utils.json_to_sheet(data.materials.accessories);
+    const productSheet = XLSX.utils.json_to_sheet(data.products);
 
-    if (selectedCategories.wood) {
-      const woodSheet = formatSheet(data.materials.wood, "Gỗ");
-      XLSX.utils.book_append_sheet(wb, woodSheet, "Gỗ");
-    }
-
-    if (selectedCategories.accessories) {
-      const accessorySheet = formatSheet(data.materials.accessories, "Phụ kiện");
-      XLSX.utils.book_append_sheet(wb, accessorySheet, "Phụ kiện");
-    }
-
-    if (selectedCategories.products) {
-      const productSheet = formatSheet(data.products, "Thành phẩm");
-      XLSX.utils.book_append_sheet(wb, productSheet, "Thành phẩm");
-    }
+    XLSX.utils.book_append_sheet(wb, woodSheet, "Gỗ");
+    XLSX.utils.book_append_sheet(wb, accessorySheet, "Phụ kiện");
+    XLSX.utils.book_append_sheet(wb, productSheet, "Thành phẩm");
 
     XLSX.writeFile(wb, `ThongKe_${period}.xlsx`);
   };
 
   return (
     <div className="p-6 space-y-8">
-      {/* Tiêu đề + Lọc thời gian + Xuất Excel */}
+      {/* Header + Filter + Export */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-foreground">📊 Thống Kê Sản Xuất Bàn Ghế</h1>
@@ -195,11 +144,10 @@ export default function StatisticsPage() {
             {period === "month" ? "tháng" : period === "quarter" ? "quý" : "năm"}
           </p>
         </div>
-
         <div className="flex gap-3">
           <select
             value={period}
-            onChange={(e) => setPeriod(e.target.value)}
+            onChange={(e) => setPeriod(e.target.value as "month" | "quarter" | "year")}
             className="border rounded-lg px-3 py-2 bg-background text-foreground"
           >
             <option value="month">Theo tháng</option>
@@ -280,7 +228,7 @@ export default function StatisticsPage() {
           <div>
             <h3 className="font-semibold mb-3 text-gray-700">🪵 Nhóm gỗ</h3>
             <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={data.materials.wood}>
+              <BarChart data={data?.materials?.wood || []}>
                 <XAxis dataKey="name" />
                 <YAxis />
                 <Tooltip />
@@ -298,13 +246,13 @@ export default function StatisticsPage() {
               <ResponsiveContainer width="100%" height={260}>
                 <PieChart>
                   <Pie
-                    data={data.materials.accessories}
+                    data={data?.materials?.accessories || []}
                     dataKey="used"
                     nameKey="name"
                     outerRadius={90}
                     label
                   >
-                    {data.materials.accessories.map((entry, index) => (
+                    {(data?.materials?.accessories || []).map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
@@ -313,7 +261,7 @@ export default function StatisticsPage() {
               </ResponsiveContainer>
 
               <ResponsiveContainer width="100%" height={260}>
-                <BarChart data={data.materials.accessories}>
+                <BarChart data={data?.materials?.accessories || []}>
                   <XAxis dataKey="name" />
                   <YAxis />
                   <Tooltip />
@@ -333,7 +281,7 @@ export default function StatisticsPage() {
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={350}>
-            <BarChart data={data.products}>
+            <BarChart data={data?.products || []}>
               <XAxis dataKey="name" />
               <YAxis />
               <Tooltip />

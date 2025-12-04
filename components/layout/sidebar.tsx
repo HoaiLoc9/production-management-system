@@ -41,6 +41,24 @@ const menuItems: MenuItem[] = [
     roles: ["admin", "manager", "director"],
   },
   {
+    label: " Phê Duyệt Phiếu Yêu Cầu Mua Nguyên Vật Liệu",
+    href: "/warehouse/raw-materials/approval",
+    icon: CheckCircle,
+    roles: ["director"], 
+  },
+  {
+    label: "Phê Duyệt Kế Hoạch Sản Xuất",
+    href: "/approval/production-plan",
+    icon: CheckCircle,
+    roles: ["director"],
+  },
+   {
+    label: "Xem báo cáo KPI",
+    href: "/statistics/kpi/view",
+    icon: FileText,
+    roles: ["director"],
+  },
+  {
     label: "Kế Hoạch Sản Xuất",
     href: "/production-plan",
     icon: Package,
@@ -122,12 +140,6 @@ const menuItems: MenuItem[] = [
     href: "/statistics/kpi/review",
     icon: CheckCircle,
     roles: ["manager", "director"],
-  },
-  {
-    label: "Phê Duyệt",
-    href: "/approval/production-plan",
-    icon: CheckCircle,
-    roles: ["director"],
   },
 ]
 
