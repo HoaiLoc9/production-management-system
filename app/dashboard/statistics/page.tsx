@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import * as XLSX from "xlsx";// ✅ chỉ cần utils & writeFile
+import * as XLSX from "xlsx";
 import {
   BarChart,
   Bar,
@@ -20,6 +20,8 @@ import {
   CardHeader,
   CardTitle
 } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#AA66CC"];
 
@@ -108,22 +110,79 @@ const demoData = {
 // ========== MAIN COMPONENT ==========
 export default function StatisticsPage() {
   const [period, setPeriod] = useState("month");
-  const data = demoData[period as "month" | "quarter" | "year"];
+  const [selectedCategories, setSelectedCategories] = useState({
+    wood: false,
+    accessories: false,
+    products: false
+  });
 
-  // ✅ Xuất file Excel
-const exportToExcel = () => {
-  const wb = XLSX.utils.book_new();
-  const woodSheet = XLSX.utils.json_to_sheet(data.materials.wood);
-  const accessorySheet = XLSX.utils.json_to_sheet(data.materials.accessories);
-  const productSheet = XLSX.utils.json_to_sheet(data.products);
+  const data = demoData[period];
 
-  XLSX.utils.book_append_sheet(wb, woodSheet, "Gỗ");
-  XLSX.utils.book_append_sheet(wb, accessorySheet, "Phụ kiện");
-  XLSX.utils.book_append_sheet(wb, productSheet, "Thành phẩm");
+  // Toggle checkbox
+  const handleCheckboxChange = (category) => {
+    setSelectedCategories(prev => ({
+      ...prev,
+      [category]: !prev[category]
+    }));
+  };
 
-  XLSX.writeFile(wb, `ThongKe_${period}.xlsx`);
-};
+  // ✅ Xuất file Excel chỉ với các mục đã chọn
+  const exportToExcel = () => {
+    const hasSelection = Object.values(selectedCategories).some(val => val);
+    
+    if (!hasSelection) {
+      alert("Vui lòng chọn ít nhất một loại dữ liệu để xuất!");
+      return;
+    }
 
+    const wb = XLSX.utils.book_new();
+
+    // Hàm format header
+    const formatSheet = (data, sheetName) => {
+      const ws = XLSX.utils.json_to_sheet(data);
+      
+      // Lấy range của sheet
+      const range = XLSX.utils.decode_range(ws['!ref']);
+      
+      // Format header (hàng đầu tiên)
+      for (let C = range.s.c; C <= range.e.c; ++C) {
+        const address = XLSX.utils.encode_col(C) + "1";
+        if (!ws[address]) continue;
+        
+        // Thêm style cho header
+        ws[address].s = {
+          font: { bold: true, sz: 14 },
+          alignment: { horizontal: "center", vertical: "center" }
+        };
+      }
+      
+      // Set column width
+      ws['!cols'] = [
+        { wch: 20 },
+        { wch: 15 },
+        { wch: 15 }
+      ];
+      
+      return ws;
+    };
+
+    if (selectedCategories.wood) {
+      const woodSheet = formatSheet(data.materials.wood, "Gỗ");
+      XLSX.utils.book_append_sheet(wb, woodSheet, "Gỗ");
+    }
+
+    if (selectedCategories.accessories) {
+      const accessorySheet = formatSheet(data.materials.accessories, "Phụ kiện");
+      XLSX.utils.book_append_sheet(wb, accessorySheet, "Phụ kiện");
+    }
+
+    if (selectedCategories.products) {
+      const productSheet = formatSheet(data.products, "Thành phẩm");
+      XLSX.utils.book_append_sheet(wb, productSheet, "Thành phẩm");
+    }
+
+    XLSX.writeFile(wb, `ThongKe_${period}.xlsx`);
+  };
 
   return (
     <div className="p-6 space-y-8">
@@ -147,14 +206,69 @@ const exportToExcel = () => {
             <option value="quarter">Theo quý</option>
             <option value="year">Theo năm</option>
           </select>
-          <button
+          <Button 
             onClick={exportToExcel}
-            className="bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded-lg"
+            className="bg-green-600 hover:bg-green-700 text-white font-medium"
           >
             ⬇️ Xuất Excel
-          </button>
+          </Button>
         </div>
       </div>
+
+      {/* Chọn dữ liệu xuất Excel */}
+      <Card className="bg-blue-50 border-blue-200">
+        <CardHeader>
+          <CardTitle className="text-lg">📥 Chọn dữ liệu cần thống kê</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Cột 1: Nhóm gỗ */}
+            <div className="space-y-3">
+              <h3 className="font-semibold text-gray-700 mb-3">🪵 Nhóm gỗ</h3>
+              <div className="flex items-center space-x-3">
+                <Checkbox 
+                  id="wood" 
+                  checked={selectedCategories.wood}
+                  onCheckedChange={() => handleCheckboxChange('wood')}
+                />
+                <label htmlFor="wood" className="text-sm font-medium cursor-pointer">
+                  Tất cả loại gỗ
+                </label>
+              </div>
+            </div>
+
+            {/* Cột 2: Phụ kiện */}
+            <div className="space-y-3">
+              <h3 className="font-semibold text-gray-700 mb-3">⚙️ Phụ kiện</h3>
+              <div className="flex items-center space-x-3">
+                <Checkbox 
+                  id="accessories" 
+                  checked={selectedCategories.accessories}
+                  onCheckedChange={() => handleCheckboxChange('accessories')}
+                />
+                <label htmlFor="accessories" className="text-sm font-medium cursor-pointer">
+                  Ốc vít, Bản lề, Ke sắt,...
+                </label>
+              </div>
+            </div>
+
+            {/* Cột 3: Thành phẩm */}
+            <div className="space-y-3">
+              <h3 className="font-semibold text-gray-700 mb-3">🪑 Thành phẩm</h3>
+              <div className="flex items-center space-x-3">
+                <Checkbox 
+                  id="products" 
+                  checked={selectedCategories.products}
+                  onCheckedChange={() => handleCheckboxChange('products')}
+                />
+                <label htmlFor="products" className="text-sm font-medium cursor-pointer">
+                  Bàn, Ghế, Tủ, Kệ,...
+                </label>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* NGUYÊN LIỆU */}
       <Card>
