@@ -1,5 +1,7 @@
 'use client';
 
+import { CheckCircle2 } from 'lucide-react';
+
 export default function SuccessScreen({
   employeeName,
   onCreateNew,
@@ -8,36 +10,46 @@ export default function SuccessScreen({
   onCreateNew: () => void;
 }) {
   return (
-    <div className="p-6 max-w-xl mx-auto text-center">
-      {/* Tiêu đề */}
-      <h2 className="text-xl font-semibold mb-2 text-gray-800">
-        Tạo phiếu NVL lỗi
-      </h2>
-      <p className="text-sm text-gray-500 mb-6">
-        Nhân viên: <strong>{employeeName}</strong>
-      </p>
-
-      {/* Icon thành công */}
-      <div className="flex justify-center mb-4">
-        <div className="bg-green-100 text-green-600 rounded-full p-4 text-3xl">
-          ✅
+    <div className="min-h-[60vh] flex items-center justify-center px-4">
+      <div className="bg-white rounded-2xl shadow-lg p-8 max-w-md w-full text-center border border-gray-100">
+        
+        {/* Icon thành công */}
+        <div className="flex justify-center mb-4">
+          <div className="text-green-600 animate-bounce">
+            <CheckCircle2 size={64} />
+          </div>
         </div>
-      </div>
 
-      {/* Nội dung thông báo */}
-      <h3 className="text-lg font-semibold text-green-700 mb-2">
-        Tạo phiếu thành công
-      </h3>
-      <p className="text-sm text-gray-600 mb-6">
-        Phiếu NVL lỗi đã được lưu vào cơ sở dữ liệu và số lượng tồn kho đã được
-        cập nhật.
-      </p>
+        {/* Tiêu đề */}
+        <h2 className="text-2xl font-bold text-gray-800 mb-2">
+          Tạo phiếu thành công!
+        </h2>
 
-      {/* Nút hành động */}
-      <div className="flex justify-center">
+        <p className="text-sm text-gray-500 mb-6">
+          Phiếu NVL lỗi đã được lưu vào hệ thống.<br />
+          Nhân viên thực hiện: <span className="font-semibold text-gray-700">{employeeName}</span>
+        </p>
+
+        {/* Khung mô tả */}
+        <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6 text-sm text-green-700">
+          Dữ liệu đã được cập nhật và số lượng tồn kho đã được điều chỉnh.
+        </div>
+
+        {/* Nút tạo phiếu mới */}
         <button
           onClick={onCreateNew}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
+          className="
+            bg-blue-600 
+            hover:bg-blue-700 
+            text-white 
+            px-5 py-3 
+            rounded-xl 
+            font-medium 
+            shadow-md 
+            hover:shadow-lg 
+            transition-all
+            w-full
+          "
         >
           Tạo phiếu mới
         </button>
