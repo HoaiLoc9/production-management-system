@@ -14,18 +14,23 @@ export async function POST(req: NextRequest) {
     await query("DELETE FROM assignments WHERE plan_id = $1", [plan_id])
 
     // Insert các bước mới
-    for (const [stepIndex, team] of Object.entries(steps)) {
+    for (const [stepIndex, info] of Object.entries(steps)) {
+      const { team, ca } = info as { team: string; ca: string }
+
       await query(
-        "INSERT INTO assignments (plan_id, step_index, team, assigned_by) VALUES ($1, $2, $3, $4)",
-        [plan_id, parseInt(stepIndex), team, assigned_by]
+        `INSERT INTO assignments 
+          (plan_id, step_index, team, ca, assigned_by) 
+         VALUES ($1, $2, $3, $4, $5)`,
+        [plan_id, parseInt(stepIndex), team, ca, assigned_by]
       )
     }
 
-    // Cập nhật trạng thái kế hoạch
+    // Cập nhật kế hoạch sang trạng thái approved
     await query("UPDATE production_plans SET status='approved' WHERE id=$1", [plan_id])
 
     return NextResponse.json({ success: true, message: "Phân công thành công" })
   } catch (err: any) {
+    console.error("❌ Lỗi API phân công:", err)
     return NextResponse.json({ message: err.message }, { status: 500 })
   }
 }

@@ -1,35 +1,24 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server";
+import { query } from "@/lib/db_nhu";
 
-// Mock data - replace with real database
-const attendanceRecords = [
-  {
-    id: 1,
-    worker_id: 1,
-    date: "2025-01-20",
-    check_in: "08:00",
-    check_out: "17:00",
-    status: "present",
-  },
-  {
-    id: 2,
-    worker_id: 2,
-    date: "2025-01-20",
-    check_in: "08:15",
-    check_out: "17:00",
-    status: "late",
-  },
-]
+export async function GET(req: NextRequest) {
+  try {
+    // 1) Lấy plan_id đã chấm công
+    const completedRes = await query(`SELECT DISTINCT plan_id FROM attendance_quantity`);
+    const completed = completedRes.rows.map((r: any) => r.plan_id);
 
-export async function GET() {
-  return NextResponse.json(attendanceRecords)
-}
+    // 2) Lấy tất cả kế hoạch
+    const plansRes = await query(`SELECT id, plan_code FROM production_plans`);
 
-export async function POST(request: Request) {
-  const data = await request.json()
-  const newRecord = {
-    id: attendanceRecords.length + 1,
-    ...data,
+    return NextResponse.json({
+      success: true,
+      data: plansRes.rows,
+      completed: completed,
+    });
+  } catch (err) {
+    return NextResponse.json(
+      { success: false, message: err instanceof Error ? err.message : String(err) },
+      { status: 500 }
+    );
   }
-  attendanceRecords.push(newRecord)
-  return NextResponse.json(newRecord, { status: 201 })
 }

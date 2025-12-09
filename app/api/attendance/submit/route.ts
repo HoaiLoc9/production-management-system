@@ -1,37 +1,31 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { query } from "@/lib/db_nhu";
 
-export async function POST(req: Request) {
-  const body = await req.json();
-  const { plan_id, ca, records } = body;
-
-  if (!plan_id || !ca || !records) {
-    return NextResponse.json({ message: "Dữ liệu không hợp lệ" }, { status: 400 });
-  }
-
+export async function POST(req: NextRequest) {
   try {
-    for (const w of records) {
-      for (const t of w.tasks) {
-        const qty = Number(t.quantity);
-        if (isNaN(qty) || qty < 0) {
-          return NextResponse.json({
-            message: `Số lượng không hợp lệ cho nhân viên ${w.worker_id}, khâu ${t.step_index}`
-          }, { status: 400 });
-        }
+    const payload = await req.json();
+    if (!payload.plan_id || payload.ca == null || !Array.isArray(payload.records)) {
+      return NextResponse.json({ success: false, message: "Payload không hợp lệ" }, { status: 400 });
+    }
 
+    for (const rec of payload.records) {
+      for (const t of rec.tasks) {
         await query(
-          `INSERT INTO attendance_quantity (plan_id, ca, worker_id, step_index, quantity)
-           VALUES ($1, $2, $3, $4, $5)
-           ON CONFLICT (plan_id, ca, worker_id, step_index)
-           DO UPDATE SET quantity = EXCLUDED.quantity`,
-          [plan_id, ca, w.worker_id, t.step_index, qty]
+          `INSERT INTO attendance_quantity
+          (plan_id, ca, worker_name, worker_id, team, step_index, quantity, created_at)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())
+          ON CONFLICT (plan_id, ca, worker_id, step_index) DO UPDATE
+          SET quantity = EXCLUDED.quantity, created_at = NOW()`,
+          [payload.plan_id, payload.ca, rec.worker_name, rec.worker_id, rec.team, t.step_index, t.quantity]
         );
       }
     }
 
-    return NextResponse.json({ message: "Chấm công thành công" });
+    return NextResponse.json({ success: true, message: "Lưu chấm công thành công!" });
   } catch (err) {
-    console.error("SERVER ERROR:", err);
-    return NextResponse.json({ message: "Lỗi server" }, { status: 500 });
+    return NextResponse.json(
+      { success: false, message: err instanceof Error ? err.message : String(err) },
+      { status: 500 }
+    );
   }
 }

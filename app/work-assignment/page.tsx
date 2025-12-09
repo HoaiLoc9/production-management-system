@@ -13,7 +13,7 @@ export default function WorkAssignments() {
   const { user } = useAuth()
   const [plans, setPlans] = useState<any[]>([])
   const [selectedPlan, setSelectedPlan] = useState<any>(null)
-  const [assignments, setAssignments] = useState<Record<number, string>>({})
+  const [assignments, setAssignments] = useState<Record<number, AssignmentInfo>>({})
   const [open, setOpen] = useState(false)
   const [error, setError] = useState("")
   const [successMessage, setSuccessMessage] = useState("")
@@ -29,6 +29,11 @@ export default function WorkAssignments() {
     "Kiểm tra chất lượng",
     "Đóng gói",
   ]
+
+  interface AssignmentInfo {
+    team?: string;
+    ca?: string;
+  }
 
   // 🔹 Fetch danh sách kế hoạch
   useEffect(() => {
@@ -63,7 +68,9 @@ export default function WorkAssignments() {
       return
     }
 
-    const missingSteps = workSteps.filter((_, i) => !assignments[i])
+    const missingSteps = workSteps.filter((_, i) => {
+      return !assignments[i]?.team || !assignments[i]?.ca
+    })
     if (missingSteps.length > 0) {
       setError("Vui lòng chọn tổ thực hiện cho tất cả công đoạn.")
       return
@@ -152,7 +159,6 @@ export default function WorkAssignments() {
             </Card>
           ))}
         </div>
-
         {/* Dialog phân công */}
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
@@ -179,31 +185,60 @@ export default function WorkAssignments() {
                   </div>
                 </div>
 
-                {workSteps.map((step, index) => (
-                  <div
-                    key={index}
-                    className="grid grid-cols-[1fr_240px] items-center border rounded-lg p-3 gap-4"
-                  >
-                    <span>{step}</span>
-                    <Select
-                      disabled={isReadOnly}
-                      value={assignments[index]}
-                      onValueChange={(value) => {
-                        if (!isReadOnly) setAssignments(prev => ({ ...prev, [index]: value }))
-                      }}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Chọn tổ thực hiện" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {[...Array(10)].map((_, i) => (
-                          <SelectItem key={i} value={`to${i+1}`}>Tổ {i+1}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                ))}
+          {workSteps.map((step, index) => (
+            <div
+              key={index}
+              className="grid grid-cols-[1fr_200px_150px] items-center border rounded-lg p-3 gap-4"
+            >
+              <span>{step}</span>
 
+              {/* Select tổ */}
+              <Select
+                disabled={isReadOnly}
+                value={assignments[index]?.team ?? ""}
+                onValueChange={(value) => {
+                  if (!isReadOnly) {
+                    setAssignments(prev => ({
+                      ...prev,
+                      [index]: { ...(prev[index] ?? {}), team: value }
+                    }))
+                  }
+                }}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Chọn tổ" />
+                </SelectTrigger>
+                <SelectContent>
+                  {[...Array(10)].map((_, i) => (
+                    <SelectItem key={i} value={`to${i + 1}`}>Tổ {i + 1}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              {/* Select ca */}
+              <Select
+                disabled={isReadOnly}
+                value={assignments[index]?.ca ?? ""}
+                onValueChange={(value) => {
+                  if (!isReadOnly) {
+                    setAssignments(prev => ({
+                      ...prev,
+                      [index]: { ...(prev[index] ?? {}), ca: value }
+                    }))
+                  }
+                }}
+    >
+                <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Chọn ca" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">Ca 1</SelectItem>
+                    <SelectItem value="2">Ca 2</SelectItem>
+                    <SelectItem value="3">Ca 3</SelectItem>
+                  </SelectContent>
+              </Select>
+            </div>
+          ))}
                 {!isReadOnly && error && <p className="text-red-500 text-sm">{error}</p>}
 
                 {!isReadOnly && (
