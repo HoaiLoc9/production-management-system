@@ -1,12 +1,10 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Plus, Edit, Trash2 } from "lucide-react"
 
-// --- DỮ LIỆU ĐƠN HÀNG MẶC ĐỊNH ---
 const defaultOrders = [
   { id: 1, code: "DH-2025-001", customer: "Công ty Minh Tâm", product: "Ghế Gỗ", quantity: 150, deliveryDate: "2025-11-15", status: "Chưa lên kế hoạch" },
   { id: 2, code: "DH-2025-002", customer: "Cửa hàng Nội thất Việt", product: "Bàn Gỗ", quantity: 80, deliveryDate: "2025-11-20", status: "Chưa lên kế hoạch" },
@@ -23,33 +21,51 @@ export default function ProductionPlanPage() {
   const [plans, setPlans] = useState([])
   const [orders, setOrders] = useState([])
 
-  // 🔹 Load dữ liệu từ localStorage khi component mount
   useEffect(() => {
-    // Load kế hoạch sản xuất
     const savedPlans = JSON.parse(localStorage.getItem("productionPlans") || "[]")
     setPlans(savedPlans)
 
-    // ✅ Tự động cập nhật đơn hàng với dữ liệu mới nhất
-    localStorage.setItem("orders", JSON.stringify(defaultOrders))
-    setOrders(defaultOrders)
+    // Khởi tạo orders nếu chưa có
+    const savedOrders = localStorage.getItem("orders")
+    if (!savedOrders) {
+      localStorage.setItem("orders", JSON.stringify(defaultOrders))
+      setOrders(defaultOrders)
+    } else {
+      setOrders(JSON.parse(savedOrders))
+    }
   }, [])
 
-  // 🔹 Xóa kế hoạch
-  const handleDeletePlan = (id: number) => {
+  const handleDeletePlan = (id) => {
     if (confirm("Bạn có chắc muốn xóa kế hoạch này không?")) {
+      const planToDelete = plans.find(p => p.id === id)
       const updated = plans.filter((p) => p.id !== id)
       localStorage.setItem("productionPlans", JSON.stringify(updated))
       setPlans(updated)
+
+      // Khôi phục đơn hàng về trạng thái "Chưa lên kế hoạch"
+      if (planToDelete) {
+        const updatedOrders = orders.map(order => {
+          if (order.code === planToDelete.orderCode) {
+            return { ...order, status: "Chưa lên kế hoạch" }
+          }
+          return order
+        })
+        localStorage.setItem("orders", JSON.stringify(updatedOrders))
+        setOrders(updatedOrders)
+      }
     }
   }
 
-  // 🔹 Xóa đơn hàng
-  const handleDeleteOrder = (id: number) => {
+  const handleDeleteOrder = (id) => {
     if (confirm("Bạn có chắc muốn xóa đơn hàng này không?")) {
       const updated = orders.filter((o) => o.id !== id)
       localStorage.setItem("orders", JSON.stringify(updated))
       setOrders(updated)
     }
+  }
+
+  const handleAddPlan = () => {
+    window.location.href = "/production-plan/add"
   }
 
   return (
@@ -60,12 +76,10 @@ export default function ProductionPlanPage() {
           <h1 className="text-3xl font-bold text-foreground">Kế Hoạch Sản Xuất</h1>
           <p className="text-muted-foreground mt-2">Quản lý các kế hoạch sản xuất</p>
         </div>
-        <Link href="/production-plan/add">
-          <Button className="gap-2">
-            <Plus size={18} />
-            Thêm Kế Hoạch
-          </Button>
-        </Link>
+        <Button onClick={handleAddPlan} className="gap-2">
+          <Plus size={18} />
+          Thêm Kế Hoạch
+        </Button>
       </div>
 
       {/* --- BẢNG KẾ HOẠCH --- */}
@@ -83,8 +97,9 @@ export default function ProductionPlanPage() {
                   <th className="text-left py-3 px-4 font-medium">Khách Hàng</th>
                   <th className="text-left py-3 px-4 font-medium">Sản Phẩm</th>
                   <th className="text-left py-3 px-4 font-medium">Số Lượng</th>
+                  <th className="text-left py-3 px-4 font-medium">Xưởng</th>
                   <th className="text-left py-3 px-4 font-medium">Ngày Bắt Đầu</th>
-                  <th className="text-left py-3 px-4 font-medium">Ngày Kết Thúc</th>
+                  <th className="text-left py-3 px-4 font-medium">Ngày Giao</th>
                   <th className="text-left py-3 px-4 font-medium">Trạng Thái</th>
                   <th className="text-left py-3 px-4 font-medium">Hành Động</th>
                 </tr>
@@ -92,7 +107,7 @@ export default function ProductionPlanPage() {
               <tbody>
                 {plans.length === 0 ? (
                   <tr>
-                    <td colSpan={9} className="text-center py-8 text-muted-foreground">
+                    <td colSpan={10} className="text-center py-8 text-muted-foreground">
                       Chưa có kế hoạch sản xuất nào
                     </td>
                   </tr>
@@ -104,6 +119,11 @@ export default function ProductionPlanPage() {
                       <td className="py-3 px-4">{plan.customer}</td>
                       <td className="py-3 px-4">{plan.product}</td>
                       <td className="py-3 px-4">{plan.quantity}</td>
+                      <td className="py-3 px-4">
+                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                          {plan.workshop || "Chưa chọn"}
+                        </span>
+                      </td>
                       <td className="py-3 px-4">{plan.startDate}</td>
                       <td className="py-3 px-4">{plan.endDate}</td>
                       <td className="py-3 px-4">
@@ -115,11 +135,9 @@ export default function ProductionPlanPage() {
                         </span>
                       </td>
                       <td className="py-3 px-4 flex gap-2">
-                        <Link href={`/production-plan/edit/${plan.id}`}>
-                          <Button variant="ghost" size="sm">
-                            <Edit size={16} />
-                          </Button>
-                        </Link>
+                        <Button variant="ghost" size="sm" onClick={() => window.location.href = `/production-plan/edit/${plan.id}`}>
+                          <Edit size={16} />
+                        </Button>
                         <Button variant="ghost" size="sm" onClick={() => handleDeletePlan(plan.id)}>
                           <Trash2 size={16} className="text-red-600" />
                         </Button>
@@ -136,7 +154,7 @@ export default function ProductionPlanPage() {
       {/* --- BẢNG ĐƠN HÀNG --- */}
       <Card>
         <CardHeader>
-          <CardTitle>Danh Sách Đơn Hàng Chưa Lên Kế Hoạch</CardTitle>
+          <CardTitle>Danh Sách Đơn Hàng</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
@@ -168,7 +186,11 @@ export default function ProductionPlanPage() {
                       <td className="py-3 px-4">{order.quantity}</td>
                       <td className="py-3 px-4">{order.deliveryDate}</td>
                       <td className="py-3 px-4">
-                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          order.status === "Đã lên kế hoạch" 
+                            ? "bg-green-100 text-green-800" 
+                            : "bg-yellow-100 text-yellow-800"
+                        }`}>
                           {order.status}
                         </span>
                       </td>

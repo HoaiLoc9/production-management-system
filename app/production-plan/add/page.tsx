@@ -44,13 +44,23 @@ export default function AddProductionPlanPage() {
   const [orders, setOrders] = useState<Order[]>([])
   const [startDate, setStartDate] = useState("")
   const [endDate, setEndDate] = useState("")
+  const [workshop, setWorkshop] = useState("")
   const [showMaterialTable, setShowMaterialTable] = useState(false)
   const [products, setProducts] = useState<Product[]>([
     { id: 1, name: "", quantity: "", unit: "", estimate: "", completion: "" },
   ])
   const [materials, setMaterials] = useState<Material[]>([])
 
-  // ✅ Tạo mã kế hoạch tự động không trùng lặp
+  // Danh sách xưởng
+  const workshops = [
+    "Xưởng 1",
+    "Xưởng 2",
+    "Xưởng 3",
+    "Xưởng 4",
+    "Xưởng 5",
+    "Xưởng 6",
+  ]
+
   const generateUniquePlanCode = (): string => {
     const existingPlans = JSON.parse(localStorage.getItem("productionPlans") || "[]")
     const existingCodes = new Set(existingPlans.map((p: any) => p.code))
@@ -64,7 +74,6 @@ export default function AddProductionPlanPage() {
     return newCode
   }
 
-  // ✅ Load đơn hàng và tạo mã kế hoạch khi component mount
   useEffect(() => {
     const savedOrders = JSON.parse(localStorage.getItem("orders") || "[]")
     setOrders(savedOrders)
@@ -74,13 +83,11 @@ export default function AddProductionPlanPage() {
     }
   }, [])
 
-  // ✅ Khi chọn đơn hàng, tự động điền thông tin
   const handleOrderChange = (code: string) => {
     setOrderCode(code)
     const order = orders.find(o => o.code === code)
     if (order) {
       setSelectedOrder(order)
-      // Tự động điền sản phẩm và số lượng từ đơn hàng
       setProducts([{
         id: 1,
         name: order.product,
@@ -164,11 +171,10 @@ export default function AddProductionPlanPage() {
     setProducts(updatedProducts)
   }
 
-  // ✅ Lưu kế hoạch và xóa đơn hàng khỏi danh sách
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!planName || !orderCode || !startDate || !endDate) {
+    if (!planName || !orderCode || !startDate || !endDate || !workshop) {
       alert("Vui lòng điền đầy đủ thông tin kế hoạch!")
       return
     }
@@ -179,7 +185,6 @@ export default function AddProductionPlanPage() {
       return
     }
 
-    // Lưu kế hoạch mới
     const existingPlans = JSON.parse(localStorage.getItem("productionPlans") || "[]")
     const newId = existingPlans.length > 0 ? Math.max(...existingPlans.map((p: any) => p.id)) + 1 : 1
 
@@ -192,13 +197,13 @@ export default function AddProductionPlanPage() {
       quantity: validProducts.reduce((sum, p) => sum + (parseInt(p.quantity) || 0), 0),
       startDate,
       endDate,
+      workshop,
       status: "in-progress",
     }
 
     const updatedPlans = [...existingPlans, newPlan]
     localStorage.setItem("productionPlans", JSON.stringify(updatedPlans))
 
-    // ✅ Xóa đơn hàng đã chọn khỏi danh sách
     const updatedOrders = orders.filter(o => o.code !== orderCode)
     localStorage.setItem("orders", JSON.stringify(updatedOrders))
 
@@ -318,6 +323,22 @@ export default function AddProductionPlanPage() {
                   </div>
                 )}
 
+                <div>
+                  <label className="block text-sm font-medium mb-2">Xưởng phụ trách *</label>
+                  <Select value={workshop} onValueChange={setWorkshop}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Chọn xưởng phụ trách" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {workshops.map((w) => (
+                        <SelectItem key={w} value={w}>
+                          {w}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium mb-2">Ngày bắt đầu *</label>
@@ -360,7 +381,6 @@ export default function AddProductionPlanPage() {
                             type="text" 
                             value={p.name}
                             onChange={(e) => updateProduct(p.id, "name", e.target.value)}
-                            placeholder="Nhập tên sản phẩm"
                           />
                         </td>
                         <td className="px-4 py-3">
